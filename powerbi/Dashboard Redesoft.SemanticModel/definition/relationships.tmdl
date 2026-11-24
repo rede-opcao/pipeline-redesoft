@@ -1,0 +1,43 @@
+relationship 60dcfd4e-fd67-4219-a8a2-5a7db8150bd4
+	fromColumn: fct_conciliacao_tanque_diario.cod_empresa
+	toColumn: dim_empresa.cod_empresa
+
+relationship 4ecd2963-5ad4-4986-aa76-50944d5dca7b
+	fromColumn: fct_afericao_bico_turno.cod_empresa
+	toColumn: dim_empresa.cod_empresa
+
+relationship 804d44eb-a6db-4d90-9f1c-0b31af688f7d
+	fromColumn: fct_pagamentos_diario.cod_empresa
+	toColumn: dim_empresa.cod_empresa
+
+relationship cbaab289-722b-426d-97e0-d01a75062c22
+	fromColumn: fct_vendas_diario.cod_empresa
+	toColumn: dim_empresa.cod_empresa
+
+relationship 61ddc704-7048-422d-82d8-e4b7e68f0212
+	fromColumn: fct_vendas_tanque_diario.cod_empresa
+	toColumn: dim_empresa.cod_empresa
+
+relationship 740d1dc7-76a7-471d-a4f2-3242554e9aca
+	fromColumn: fct_conciliacao_tanque_diario.data
+	toColumn: Calendario.Data
+
+relationship 9829b18b-b14b-44f2-ba2a-c9fabfb565f8
+	fromColumn: fct_afericao_bico_turno.data
+	toColumn: Calendario.Data
+
+relationship f9e00c06-e5fa-4e5f-b49e-c7ac4c9d6f27
+	fromColumn: fct_pagamentos_diario.data
+	toColumn: Calendario.Data
+
+relationship 763c901f-5943-4cf8-a809-8905de397a3e
+	fromColumn: fct_vendas_diario.data
+	toColumn: Calendario.Data
+
+relationship 5b0e694c-12d1-44f6-af38-b93a46b114d0
+	fromColumn: fct_vendas_tanque_diario.data
+	toColumn: Calendario.Data
+
+relationship c8f8cea7-4b16-4248-9cdc-5f99a6e62b31
+	fromColumn: fct_conciliacao_tanque_diario.chave_tanque
+	toColumn: dim_tanque.chave_tanque

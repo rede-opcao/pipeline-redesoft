@@ -4,6 +4,7 @@
 
 x-airflow-common: &airflow-common
   build: .
+  image: pipeline-redesoft-airflow:local
   env_file: .env
   environment: &airflow-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor

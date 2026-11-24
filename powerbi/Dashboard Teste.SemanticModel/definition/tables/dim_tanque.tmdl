@@ -1,0 +1,91 @@
+table dim_tanque
+	lineageTag: 936ec32a-25fc-4a98-a464-5dfb4d375f03
+
+	column chave_tanque
+		dataType: string
+		lineageTag: 805fe651-f679-4909-9d72-cab3045895da
+		summarizeBy: none
+		sourceColumn: chave_tanque
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_empresa
+		dataType: int64
+		lineageTag: e5af19da-3a17-4fc7-a1de-a7aa7a9b363c
+		summarizeBy: none
+		sourceColumn: cod_empresa
+
+		annotation SummarizationSetBy = Automatic
+
+	column nome_fantasia
+		dataType: string
+		lineageTag: 63d00c09-0ee7-4f9b-bafa-f71c355bc0d2
+		summarizeBy: none
+		sourceColumn: nome_fantasia
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_tanque
+		dataType: string
+		lineageTag: 80510e54-c6af-42f6-9bcb-f18cdd2b1992
+		summarizeBy: none
+		sourceColumn: cod_tanque
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_tipo_combustivel
+		dataType: int64
+		lineageTag: 0d9b4166-6ccd-49d3-8841-dd534badd1dc
+		summarizeBy: none
+		sourceColumn: cod_tipo_combustivel
+
+		annotation SummarizationSetBy = Automatic
+
+	column combustivel
+		dataType: string
+		lineageTag: 0783127c-d85a-405e-a88d-8eff8f216670
+		summarizeBy: none
+		sourceColumn: combustivel
+
+		annotation SummarizationSetBy = Automatic
+
+	column combustivel_apelido
+		dataType: string
+		lineageTag: c04a12af-bf8a-46aa-aa6f-b94929db27a7
+		summarizeBy: none
+		sourceColumn: combustivel_apelido
+
+		annotation SummarizationSetBy = Automatic
+
+	column capacidade_litros
+		dataType: int64
+		lineageTag: d61c557a-039f-4d8a-a5fb-0700acc2907a
+		summarizeBy: sum
+		sourceColumn: capacidade_litros
+
+		annotation SummarizationSetBy = Automatic
+
+	column redesoft_tank_id
+		dataType: int64
+		lineageTag: 56adc2be-791b-4f0f-816c-5996cf6c6fca
+		summarizeBy: none
+		sourceColumn: redesoft_tank_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column veeder_root_tank_id
+		dataType: int64
+		lineageTag: d0d32f66-c141-4feb-bf41-95465dfe86ba
+		summarizeBy: none
+		sourceColumn: veeder_root_tank_id
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_tanque = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("localhost:5433", "warehouse"),
+				    Tabela = Fonte{[Schema="gold",Item="dim_tanque"]}[Data]
+				in
+				    Tabela

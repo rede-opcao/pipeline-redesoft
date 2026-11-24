@@ -1,0 +1,68 @@
+table fct_vendas_tanque_diario
+	lineageTag: 74d6b281-fbab-409d-a29d-1a7de774ff3d
+
+	column chave
+		dataType: string
+		lineageTag: f007e404-99aa-47c4-b433-d551db846a92
+		summarizeBy: none
+		sourceColumn: chave
+
+		annotation SummarizationSetBy = Automatic
+
+	column data
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: c2252f67-cdf3-49b8-8dc4-306d2736d269
+		summarizeBy: none
+		sourceColumn: data
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_empresa
+		dataType: int64
+		lineageTag: 796e7ea6-59a7-4965-921f-54c91dea90f8
+		summarizeBy: none
+		sourceColumn: cod_empresa
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_tanque
+		dataType: string
+		lineageTag: 0bb44480-5e11-48a9-b8a9-6dbaf7a2593c
+		summarizeBy: none
+		sourceColumn: cod_tanque
+
+		annotation SummarizationSetBy = Automatic
+
+	column n_abastecimentos
+		dataType: int64
+		lineageTag: 6068abb9-0699-4ca5-868b-45cfc2e29b0b
+		summarizeBy: sum
+		sourceColumn: n_abastecimentos
+
+		annotation SummarizationSetBy = Automatic
+
+	column litros_vendidos
+		dataType: double
+		lineageTag: be024904-c4f9-4e94-9cb9-d62ffe7fef22
+		summarizeBy: sum
+		sourceColumn: litros_vendidos
+
+		annotation SummarizationSetBy = Automatic
+
+	column valor_total
+		dataType: double
+		lineageTag: a4dcdc9f-e793-4d9a-a7d5-46f8645d40cf
+		summarizeBy: sum
+		sourceColumn: valor_total
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fct_vendas_tanque_diario = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("localhost:5433", "warehouse"),
+				    Tabela = Fonte{[Schema="gold",Item="fct_vendas_tanque_diario"]}[Data]
+				in
+				    Tabela

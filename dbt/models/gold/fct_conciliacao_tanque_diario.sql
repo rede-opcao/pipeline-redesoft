@@ -1,42 +1,53 @@
--- Conciliação diária por tanque: consumo medido pelo Veeder-Root x litros vendidos nos bicos.
--- diferenca_litros > 0: saiu mais do tanque do que foi vendido (perda);
--- diferenca_litros < 0: vendeu mais do que saiu do tanque (sobra).
-with consumo as (
-    select * from {{ ref('stg_medicoes_consumo') }}
+-- Conciliação diária por tanque, com dados reais do B2Click:
+--   consumo_medido  = saída nos encerrantes - aferições (o que realmente saiu para clientes)
+--   litros_vendidos = soma dos abastecimentos vendidos nesses bicos
+--   diferenca_litros > 0: saiu mais pelo bico do que foi vendido; < 0: vendeu mais do que o encerrante marcou.
+-- volume_inicio/volume_fim vêm do estoque físico do LMC. Recebimentos (descargas) ainda não entram.
+with bicos as (
+    select data, cod_empresa, chave_tanque,
+           sum(saida_encerrante)  as saida_encerrante,
+           sum(afericao_litros)   as afericao_litros,
+           sum(saida_liquida)     as consumo_medido,
+           sum(litros_vendidos)   as litros_vendidos
+    from {{ ref('fct_afericao_bico_turno') }}
+    group by 1, 2, 3
 ),
-vendas as (
-    select * from {{ ref('fct_vendas_tanque_diario') }}
+lmc as (
+    select data, cod_empresa || '-' || cod_produto_tanque as chave_tanque,
+           sum(estoque_abertura) as volume_inicio, sum(estoque_fechamento) as volume_fim
+    from {{ ref('stg_b2c_tanque_lmc') }}
+    group by 1, 2
 ),
-base as (
-    select
-        coalesce(c.data, v.data)               as data,
-        coalesce(c.cod_empresa, v.cod_empresa) as cod_empresa,
-        coalesce(c.cod_tanque, v.cod_tanque)   as cod_tanque,
-        c.volume_inicio,
-        c.volume_recebido,
-        c.consumo_liquido                      as consumo_medido,
-        v.litros_vendidos,
-        c.volume_fim,
-        c.n_retratos,
-        c.teve_sonda_ausente
-    from consumo c
-    full outer join vendas v
-      on v.data = c.data and v.cod_empresa = c.cod_empresa and v.cod_tanque = c.cod_tanque
+medicoes as (
+    select data, cod_empresa || '-' || cod_produto_tanque as chave_tanque, count(*) as n_retratos
+    from {{ ref('stg_b2c_medicao_tanques') }}
+    group by 1, 2
 )
 select
-    concat_ws('|', data, cod_empresa, cod_tanque) as chave,
-    cod_empresa || '-' || cod_tanque              as chave_tanque,
-    base.*,
-    consumo_medido - coalesce(litros_vendidos, 0) as diferenca_litros,
-    case when litros_vendidos > 0
-         then round(100 * (consumo_medido - litros_vendidos) / litros_vendidos, 3)
-    end                                           as diferenca_pct,
+    concat_ws('|', b.data, b.chave_tanque)        as chave,
+    b.chave_tanque,
+    b.data,
+    b.cod_empresa,
+    split_part(b.chave_tanque, '-', 2)            as cod_tanque,
+    l.volume_inicio,
+    null::numeric                                 as volume_recebido,
+    b.consumo_medido,
+    b.litros_vendidos,
+    l.volume_fim,
+    coalesce(m.n_retratos, 0)                     as n_retratos,
+    false                                         as teve_sonda_ausente,
+    b.saida_encerrante,
+    b.afericao_litros,
+    b.consumo_medido - b.litros_vendidos          as diferenca_litros,
+    case when b.litros_vendidos > 0
+         then round(100 * (b.consumo_medido - b.litros_vendidos) / b.litros_vendidos, 3) end as diferenca_pct,
     case
-        when consumo_medido is null then 'sem_medicao'
-        when litros_vendidos is null then 'sem_venda'
-        when teve_sonda_ausente then 'sonda_ausente'
-        when abs(100 * (consumo_medido - litros_vendidos) / nullif(litros_vendidos, 0))
+        when b.litros_vendidos = 0 and b.consumo_medido = 0 then 'sem_movimento'
+        when b.litros_vendidos = 0 then 'sem_venda'
+        when abs(100 * (b.consumo_medido - b.litros_vendidos) / b.litros_vendidos)
              > {{ var('tolerancia_pct') }} then 'fora_tolerancia'
         else 'ok'
     end                                           as status
-from base
+from bicos b
+left join lmc l on l.data = b.data and l.chave_tanque = b.chave_tanque
+left join medicoes m on m.data = b.data and m.chave_tanque = b.chave_tanque

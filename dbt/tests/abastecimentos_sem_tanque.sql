@@ -1,11 +1,9 @@
--- Aviso: abastecimentos cujo bico não foi ligado a nenhum tanque.
--- Se aparecer muita coisa aqui com dados reais, a premissa bico = Bico.codigo está errada.
+-- Aviso: abastecimentos de combustível cujo COD_LMC_BICO não aparece nos encerrantes (aberturaBicos).
+-- Esses litros ficam fora da conciliação por tanque.
 {{ config(severity='warn') }}
-select i.cod_empresa, i.bico, count(*) as n
-from {{ ref('stg_itens_vendidos') }} i
-left join {{ ref('stg_bicos') }} b
-  on b.cod_empresa = i.cod_empresa and b.cod_bico = i.bico
-left join {{ ref('stg_tanques') }} t
-  on t.cod_empresa = b.cod_empresa and t.redesoft_tank_id = b.redesoft_tank_id
-where i.bico is not null and not i.cancelado and t.cod_tanque is null
+select i.cod_empresa, i.data_venda, count(*) as n, sum(i.quantidade_liquida) as litros
+from {{ ref('stg_b2c_itens_vendidos') }} i
+left join {{ ref('stg_b2c_abertura_bicos') }} a
+  on a.cod_empresa = i.cod_empresa and a.cod_lmc_bico = i.cod_lmc_bico and a.data = i.data_venda
+where i.especie_codigo = 'C' and a.cod_lmc_bico is null
 group by 1, 2

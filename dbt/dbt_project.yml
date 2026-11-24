@@ -6,8 +6,7 @@ model-paths: ["models"]
 macro-paths: ["macros"]
 
 vars:
-  # Diferença aceitável entre consumo medido no tanque e litros vendidos nos bicos (% do vendido).
-  # Ajuste conforme a política interna (referência comum de mercado: 0,6%).
+  # Diferença aceitável entre a saída no encerrante (menos aferição) e os litros vendidos (% do vendido).
   tolerancia_pct: 0.6
 
 models:
@@ -15,6 +14,15 @@ models:
     staging:
       +schema: staging
       +materialized: view
+      b2click:
+        +tags: [b2click]
+      cadastros_api:
+        +tags: [cadastros_api]
     gold:
       +schema: gold
       +materialized: table
+      +tags: [b2click]
+
+data_tests:
+  redesoft:
+    +tags: [b2click]

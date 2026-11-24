@@ -1,2 +1,2 @@
-select cod_empresa, nome_fantasia, razao_social, cnpj, cidade, uf, bandeira, ativa
-from {{ ref('stg_empresas') }}
+select cod_empresa, nome_fantasia, razao_social, cnpj, cidade, uf, null::text as bandeira, ativa
+from {{ ref('stg_b2c_empresas') }}

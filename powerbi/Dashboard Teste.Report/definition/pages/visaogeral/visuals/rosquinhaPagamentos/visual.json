@@ -1,0 +1,76 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "rosquinhaPagamentos",
+  "position": {
+    "x": 890,
+    "y": 140,
+    "z": 0,
+    "width": 370,
+    "height": 270
+  },
+  "visual": {
+    "visualType": "donutChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_pagamentos_diario"
+                    }
+                  },
+                  "Property": "forma_pagamento"
+                }
+              },
+              "queryRef": "fct_pagamentos_diario.forma_pagamento",
+              "nativeQueryRef": "forma_pagamento"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_pagamentos_diario"
+                    }
+                  },
+                  "Property": "Recebido"
+                }
+              },
+              "queryRef": "fct_pagamentos_diario.Recebido",
+              "nativeQueryRef": "Recebido"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Recebido por forma de pagamento'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

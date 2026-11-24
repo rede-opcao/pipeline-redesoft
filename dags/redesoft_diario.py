@@ -34,7 +34,8 @@ def _janela() -> tuple[date, date]:
 
 @dag(
     dag_id="redesoft_diario",
-    schedule="0 2 * * *",
+    # Sem agendamento enquanto a chave da Cadastros API não chega (a fonte ativa é o b2click_diario).
+    schedule=None,
     start_date=pendulum.datetime(2026, 11, 1, tz=TZ),
     catchup=False,
     max_active_runs=1,
@@ -57,7 +58,8 @@ def redesoft_diario():
 
     dbt_build = BashOperator(
         task_id="dbt_build",
-        bash_command="cd /opt/airflow/dbt && /home/airflow/dbt_venv/bin/dbt build --profiles-dir . --target-path /tmp/dbt_target",
+        bash_command=("cd /opt/airflow/dbt && /home/airflow/dbt_venv/bin/dbt build --select tag:cadastros_api "
+                      "--profiles-dir . --target-path /tmp/dbt_target"),
     )
 
     extracoes >> dbt_build

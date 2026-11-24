@@ -1,0 +1,18 @@
+version: 2
+sources:
+  - name: raw_b2click
+    description: CSV da API B2Click/Redesoft (retaguarda), uma linha por registro, campos como texto.
+    schema: raw_b2click
+    tables:
+      - name: empresas
+      - name: produtos
+      - name: grupos_produto
+      - name: bicos
+      - name: tanques
+      - name: formas_pagamento
+      - name: itens_vendidos
+      - name: pagamentos_vendas
+      - name: caixas
+      - name: abertura_bicos
+      - name: tanque_lmc
+      - name: medicao_tanques

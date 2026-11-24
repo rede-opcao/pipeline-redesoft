@@ -1,0 +1,14 @@
+model Model
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+ref table dim_empresa
+ref table dim_tanque
+ref table fct_conciliacao_tanque_diario
+ref table fct_afericao_bico_turno
+ref table fct_pagamentos_diario
+ref table fct_vendas_diario
+ref table fct_vendas_tanque_diario
+ref table Calendario

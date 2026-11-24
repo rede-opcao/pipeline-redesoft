@@ -1,0 +1,156 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "tabelaBicos",
+  "position": {
+    "x": 280,
+    "y": 140,
+    "z": 0,
+    "width": 980,
+    "height": 560
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_afericao_bico_turno"
+                    }
+                  },
+                  "Property": "data"
+                }
+              },
+              "queryRef": "fct_afericao_bico_turno.data",
+              "nativeQueryRef": "data"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_empresa"
+                    }
+                  },
+                  "Property": "nome_fantasia"
+                }
+              },
+              "queryRef": "dim_empresa.nome_fantasia",
+              "nativeQueryRef": "nome_fantasia"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_afericao_bico_turno"
+                    }
+                  },
+                  "Property": "bico"
+                }
+              },
+              "queryRef": "fct_afericao_bico_turno.bico",
+              "nativeQueryRef": "bico"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_afericao_bico_turno"
+                    }
+                  },
+                  "Property": "cod_caixa_abertura_turno"
+                }
+              },
+              "queryRef": "fct_afericao_bico_turno.cod_caixa_abertura_turno",
+              "nativeQueryRef": "cod_caixa_abertura_turno"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_afericao_bico_turno"
+                    }
+                  },
+                  "Property": "saida_encerrante"
+                }
+              },
+              "queryRef": "fct_afericao_bico_turno.saida_encerrante",
+              "nativeQueryRef": "saida_encerrante"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_afericao_bico_turno"
+                    }
+                  },
+                  "Property": "afericao_litros"
+                }
+              },
+              "queryRef": "fct_afericao_bico_turno.afericao_litros",
+              "nativeQueryRef": "afericao_litros"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_afericao_bico_turno"
+                    }
+                  },
+                  "Property": "litros_vendidos"
+                }
+              },
+              "queryRef": "fct_afericao_bico_turno.litros_vendidos",
+              "nativeQueryRef": "litros_vendidos"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_afericao_bico_turno"
+                    }
+                  },
+                  "Property": "diferenca_litros"
+                }
+              },
+              "queryRef": "fct_afericao_bico_turno.diferenca_litros",
+              "nativeQueryRef": "diferenca_litros"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Encerrante x aferição x vendido, por bico e turno'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

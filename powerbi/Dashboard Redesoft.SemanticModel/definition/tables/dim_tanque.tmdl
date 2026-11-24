@@ -1,0 +1,99 @@
+table dim_tanque
+	lineageTag: 97cd7d86-b8cf-4ce2-90b0-cd02df4d5975
+
+	column chave_tanque
+		dataType: string
+		lineageTag: 5293f2c8-b1d1-40e0-b7ab-28b9003919a0
+		summarizeBy: none
+		sourceColumn: chave_tanque
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_empresa
+		dataType: int64
+		lineageTag: 8641c856-4acb-4a6d-8a00-52d8642fb914
+		summarizeBy: none
+		sourceColumn: cod_empresa
+
+		annotation SummarizationSetBy = Automatic
+
+	column nome_fantasia
+		dataType: string
+		lineageTag: 05147f6f-c6c2-4138-93f3-6f8e65fed79b
+		summarizeBy: none
+		sourceColumn: nome_fantasia
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_tanque
+		dataType: string
+		lineageTag: 477fe7df-63b4-466b-8fce-bfb7066f752b
+		summarizeBy: none
+		sourceColumn: cod_tanque
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_tipo_combustivel
+		dataType: int64
+		lineageTag: 476da6f9-528f-4f3f-a751-2e52b4d135f7
+		summarizeBy: none
+		sourceColumn: cod_tipo_combustivel
+
+		annotation SummarizationSetBy = Automatic
+
+	column combustivel
+		dataType: string
+		lineageTag: 732b1b06-2689-4995-b4b6-d42c526a13ea
+		summarizeBy: none
+		sourceColumn: combustivel
+
+		annotation SummarizationSetBy = Automatic
+
+	column combustivel_apelido
+		dataType: string
+		lineageTag: 5d80523e-c4e2-44c9-b935-c203d048323e
+		summarizeBy: none
+		sourceColumn: combustivel_apelido
+
+		annotation SummarizationSetBy = Automatic
+
+	column capacidade_litros
+		dataType: double
+		lineageTag: 52795fed-1ef3-4079-9ee1-330ae6a29b8c
+		summarizeBy: sum
+		sourceColumn: capacidade_litros
+
+		annotation SummarizationSetBy = Automatic
+
+	column redesoft_tank_id
+		dataType: int64
+		lineageTag: 9237583b-6c18-465b-895b-f14609312ea4
+		summarizeBy: none
+		sourceColumn: redesoft_tank_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column veeder_root_tank_id
+		dataType: int64
+		lineageTag: caa2297d-afb5-448e-9835-b3aa3a42dbe1
+		summarizeBy: none
+		sourceColumn: veeder_root_tank_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column ativo
+		dataType: boolean
+		lineageTag: 3488e4f0-e768-4b4a-afef-5323796fe5a2
+		summarizeBy: none
+		sourceColumn: ativo
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_tanque = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("localhost:5433", "warehouse"),
+				    Tabela = Fonte{[Schema="gold",Item="dim_tanque"]}[Data]
+				in
+				    Tabela

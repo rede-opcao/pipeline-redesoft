@@ -1,7 +1,28 @@
 # Pipeline Redesoft
 
-Carga diária dos dados da **Cadastros API** (que espelha o Redesoft/B2Click) para um data lake,
-com transformação em dbt e consumo no **Power BI**.
+Carga diária dos dados do **Redesoft/B2Click** para um data lake, com transformação em dbt e
+consumo no **Power BI**.
+
+## Fonte ativa: API B2Click (retaguarda) — DAG `b2click_diario`
+
+- Credenciais no `.env`: `B2CLICK_ENTIDADE`, `B2CLICK_USUARIO`, `B2CLICK_TOKEN` (nunca no código).
+- Respostas em CSV (`;`, vírgula decimal, datas dd/mm/aaaa), gravadas como vieram no bronze
+  (`data/bronze/b2click/...`) e no schema `raw_b2click` (uma linha por registro, texto).
+- Tipos de rota: **cadastros** (completos), **diárias** (`itensVendidos`, `pagamentosDeVendas`,
+  até 7 dias por chamada) e **mensais** (`aberturaBicos`, `tanqueLMC`, `medicaoTanques`, `Caixa`:
+  a API só aceita mês fechado, do dia 1 ao último dia).
+- **Limite da API: 10 requisições/hora por endpoint para a entidade inteira**, dividido com
+  outros usos (relatórios do Power BI que chamam a API direto). A carga diária usa 1 chamada por
+  endpoint; ao atingir o limite o extrator espera a próxima hora. Carga histórica: ~5 chamadas/mês.
+- Chave do encerrante: empresa + `COD_PAF_BANCO` + `COD_LMC_BICO`. A venda liga ao encerrante por
+  empresa + `COD_LMC_BICO` + dia (a venda pode estar em outro PDV).
+- Gold novo: `fct_afericao_bico_turno` (encerrante × aferição × vendido por bico/turno). A
+  conciliação por tanque usa **saída no encerrante − aferição** contra **litros vendidos**.
+- Teste manual de todos os endpoints: `python scripts/testar_b2click.py --data 2026-11-01`
+  (atenção: consome 1 requisição de cada endpoint).
+
+A **Cadastros API** (DAG `redesoft_diario`, sem agendamento) fica como alternativa para quando a
+chave dela chegar.
 
 ```
 Cadastros API ─► Airflow (02:00) ─► bronze (JSON .jsonl.gz, local ou S3)

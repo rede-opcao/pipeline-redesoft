@@ -1,0 +1,13 @@
+table Calendario
+	lineageTag: c49199be-8168-4fff-8ffb-46eeb2954381
+
+	column Data
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 2256bc1b-05cf-4bb8-8a98-c8a58ee956f5
+		summarizeBy: none
+		sourceColumn: [Data]
+
+	partition Calendario = calculated
+		mode: import
+		source = SELECTCOLUMNS(CALENDARAUTO(), "Data", [Date])

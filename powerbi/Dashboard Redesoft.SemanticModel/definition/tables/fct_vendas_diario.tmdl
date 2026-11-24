@@ -1,0 +1,92 @@
+table fct_vendas_diario
+	lineageTag: 4b6ab79f-6684-48d3-98e1-7fc01d29f417
+
+	measure Faturamento = SUM(fct_vendas_diario[valor_total])
+		formatString: #,0.00
+		lineageTag: 6dcc1af2-d250-445e-a1d0-64c2b07826dd
+
+	measure 'Litros Combustível' = CALCULATE(SUM(fct_vendas_diario[quantidade]), fct_vendas_diario[especie] = "COMBUSTIVEL")
+		formatString: #,0
+		lineageTag: a5748e7f-2d56-40b7-90d0-4894b8475b32
+
+	column chave
+		dataType: string
+		lineageTag: fd1fc851-5bb9-4fb5-8031-3896ed28c195
+		summarizeBy: none
+		sourceColumn: chave
+
+		annotation SummarizationSetBy = Automatic
+
+	column data
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 10783107-0bea-4deb-a166-57100959b1c1
+		summarizeBy: none
+		sourceColumn: data
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_empresa
+		dataType: int64
+		lineageTag: 61e1b529-7b25-4b8b-8239-12bbfdd0f2fa
+		summarizeBy: none
+		sourceColumn: cod_empresa
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_produto
+		dataType: int64
+		lineageTag: 694b4b44-c7a9-42c2-a929-9b06c979a673
+		summarizeBy: none
+		sourceColumn: cod_produto
+
+		annotation SummarizationSetBy = Automatic
+
+	column produto
+		dataType: string
+		lineageTag: ac62cc4a-bff1-45dd-aa65-bfc86c116075
+		summarizeBy: none
+		sourceColumn: produto
+
+		annotation SummarizationSetBy = Automatic
+
+	column especie
+		dataType: string
+		lineageTag: 3aca10d5-985d-44b8-a2f1-720b8baac0e1
+		summarizeBy: none
+		sourceColumn: especie
+
+		annotation SummarizationSetBy = Automatic
+
+	column n_vendas
+		dataType: int64
+		lineageTag: 6b56ed3e-ab98-4953-be85-74a91f8e00ff
+		summarizeBy: sum
+		sourceColumn: n_vendas
+
+		annotation SummarizationSetBy = Automatic
+
+	column quantidade
+		dataType: double
+		lineageTag: 31272216-8de6-4ceb-be2e-09387153d192
+		summarizeBy: sum
+		sourceColumn: quantidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column valor_total
+		dataType: double
+		lineageTag: 4f3d74c1-2a91-42f2-bc1f-0cc4999d451e
+		summarizeBy: sum
+		sourceColumn: valor_total
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fct_vendas_diario = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("localhost:5433", "warehouse"),
+				    Tabela = Fonte{[Schema="gold",Item="fct_vendas_diario"]}[Data]
+				in
+				    Tabela

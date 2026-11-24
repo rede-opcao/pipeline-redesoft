@@ -1,0 +1,94 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "matrizConciliacao",
+  "position": {
+    "x": 20,
+    "y": 420,
+    "z": 0,
+    "width": 760,
+    "height": 280
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_conciliacao_tanque_diario"
+                    }
+                  },
+                  "Property": "chave_tanque"
+                }
+              },
+              "queryRef": "fct_conciliacao_tanque_diario.chave_tanque",
+              "nativeQueryRef": "chave_tanque"
+            }
+          ]
+        },
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Calendario"
+                    }
+                  },
+                  "Property": "Data"
+                }
+              },
+              "queryRef": "Calendario.Data",
+              "nativeQueryRef": "Data"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_conciliacao_tanque_diario"
+                    }
+                  },
+                  "Property": "Diferença %"
+                }
+              },
+              "queryRef": "fct_conciliacao_tanque_diario.Diferença %",
+              "nativeQueryRef": "Diferença %"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Conciliação tanque x bicos: diferença % por dia'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

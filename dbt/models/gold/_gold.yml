@@ -3,29 +3,34 @@ models:
   - name: dim_empresa
     columns:
       - name: cod_empresa
-        tests: [unique, not_null]
+        data_tests: [unique, not_null]
   - name: dim_tanque
     columns:
       - name: chave_tanque
-        tests: [unique, not_null]
+        data_tests: [unique, not_null]
   - name: fct_vendas_diario
     columns:
       - name: chave
-        tests: [unique, not_null]
+        data_tests: [unique, not_null]
   - name: fct_vendas_tanque_diario
     columns:
       - name: chave
-        tests: [unique, not_null]
+        data_tests: [unique, not_null]
   - name: fct_pagamentos_diario
     columns:
       - name: chave
-        tests: [unique, not_null]
-  - name: fct_conciliacao_tanque_diario
-    description: Consumo medido no tanque x litros vendidos nos bicos, por dia.
+        data_tests: [unique, not_null]
+  - name: fct_afericao_bico_turno
+    description: Encerrante x aferição x vendido, por bico e turno.
     columns:
       - name: chave
-        tests: [unique, not_null]
+        data_tests: [unique, not_null]
+  - name: fct_conciliacao_tanque_diario
+    description: Saída nos encerrantes (menos aferição) x litros vendidos, por tanque e dia.
+    columns:
+      - name: chave
+        data_tests: [unique, not_null]
       - name: status
-        tests:
+        data_tests:
           - accepted_values:
-              values: [ok, fora_tolerancia, sem_medicao, sem_venda, sonda_ausente]
+              values: [ok, fora_tolerancia, sem_venda, sem_movimento]

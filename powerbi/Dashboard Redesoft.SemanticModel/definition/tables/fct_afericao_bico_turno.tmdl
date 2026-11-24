@@ -1,0 +1,140 @@
+table fct_afericao_bico_turno
+	lineageTag: 9ec7f59e-c951-4708-9bf7-735e138b46b0
+
+	column cod_lmc_bico
+		dataType: int64
+		lineageTag: 63006413-a68d-4363-acfb-a1d76bc28c50
+		summarizeBy: none
+		sourceColumn: cod_lmc_bico
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_empresa
+		dataType: int64
+		lineageTag: 7d0001bd-a21a-40b2-bfd7-1d964051877e
+		summarizeBy: none
+		sourceColumn: cod_empresa
+
+		annotation SummarizationSetBy = Automatic
+
+	column data
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 75935de7-ce45-4e76-8dfe-c5c7403e55a9
+		summarizeBy: none
+		sourceColumn: data
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_caixa_abertura_turno
+		dataType: int64
+		lineageTag: 8ead5cef-535b-408a-b617-dbad9a25a55d
+		summarizeBy: none
+		sourceColumn: cod_caixa_abertura_turno
+
+		annotation SummarizationSetBy = Automatic
+
+	column ordem
+		dataType: int64
+		lineageTag: 43a46cc9-2f07-4b6a-9263-dc1b66ca121f
+		summarizeBy: none
+		sourceColumn: ordem
+
+		annotation SummarizationSetBy = Automatic
+
+	column bico
+		dataType: int64
+		lineageTag: 9e446997-fbbc-4805-aec4-acc9c33ec229
+		summarizeBy: none
+		sourceColumn: bico
+
+		annotation SummarizationSetBy = Automatic
+
+	column chave_tanque
+		dataType: string
+		lineageTag: ac487d0a-a584-4902-bec7-4dcb27549008
+		summarizeBy: none
+		sourceColumn: chave_tanque
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_produto
+		dataType: int64
+		lineageTag: 1e1437cb-3ff0-4fd4-b16f-9bef3055430c
+		summarizeBy: none
+		sourceColumn: cod_produto
+
+		annotation SummarizationSetBy = Automatic
+
+	column encerrante_inicial
+		dataType: double
+		lineageTag: 0d079dcb-2105-4b4c-a6dc-b790c25c37e7
+		summarizeBy: none
+		sourceColumn: encerrante_inicial
+
+		annotation SummarizationSetBy = Automatic
+
+	column encerrante_final
+		dataType: double
+		lineageTag: 084ae29f-ddf1-4f13-b86d-5164d342a965
+		summarizeBy: none
+		sourceColumn: encerrante_final
+
+		annotation SummarizationSetBy = Automatic
+
+	column saida_encerrante
+		dataType: double
+		lineageTag: fb9f84d4-9808-481b-aacc-d6b88c991a8f
+		summarizeBy: sum
+		sourceColumn: saida_encerrante
+
+		annotation SummarizationSetBy = Automatic
+
+	column afericao_litros
+		dataType: double
+		lineageTag: 2811489a-9dd9-412d-a449-1fabd8a6e229
+		summarizeBy: sum
+		sourceColumn: afericao_litros
+
+		annotation SummarizationSetBy = Automatic
+
+	column saida_liquida
+		dataType: double
+		lineageTag: 11fbc25d-1f39-47f3-a2b9-beab9d6ccca6
+		summarizeBy: sum
+		sourceColumn: saida_liquida
+
+		annotation SummarizationSetBy = Automatic
+
+	column litros_vendidos
+		dataType: double
+		lineageTag: a7c2bd6d-1f39-443f-abf1-0ea66434261e
+		summarizeBy: sum
+		sourceColumn: litros_vendidos
+
+		annotation SummarizationSetBy = Automatic
+
+	column n_abastecimentos
+		dataType: int64
+		lineageTag: 42ff9329-c55e-499a-af2c-22825569225c
+		summarizeBy: sum
+		sourceColumn: n_abastecimentos
+
+		annotation SummarizationSetBy = Automatic
+
+	column diferenca_litros
+		dataType: double
+		lineageTag: 145c043e-1969-4f9a-ae4c-9ed57ea6ed82
+		summarizeBy: sum
+		sourceColumn: diferenca_litros
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fct_afericao_bico_turno = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("localhost:5433", "warehouse"),
+				    Tabela = Fonte{[Schema="gold",Item="fct_afericao_bico_turno"]}[Data]
+				in
+				    Tabela

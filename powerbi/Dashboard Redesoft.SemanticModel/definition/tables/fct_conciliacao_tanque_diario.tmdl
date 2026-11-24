@@ -1,0 +1,164 @@
+table fct_conciliacao_tanque_diario
+	lineageTag: 8adfb1ff-ac0a-483f-b97e-8af54558837a
+
+	measure 'Diferença (L)' = SUM(fct_conciliacao_tanque_diario[diferenca_litros])
+		formatString: #,0.0
+		lineageTag: a771d4c9-c4c6-4359-a25e-01fa543c1011
+
+	measure 'Diferença %' = DIVIDE(SUM(fct_conciliacao_tanque_diario[consumo_medido]) - SUM(fct_conciliacao_tanque_diario[litros_vendidos]), SUM(fct_conciliacao_tanque_diario[litros_vendidos]))
+		formatString: 0.00%
+		lineageTag: 14e4ffd8-45f0-4cde-9a1e-b9e1729954d2
+
+	measure 'Aferição (L)' = SUM(fct_conciliacao_tanque_diario[afericao_litros])
+		formatString: #,0
+		lineageTag: f6f42ea0-d834-470f-8f39-ffaa36aeddc7
+
+	measure 'Dias fora da tolerância' = CALCULATE(COUNTROWS(fct_conciliacao_tanque_diario), fct_conciliacao_tanque_diario[status] = "fora_tolerancia")
+		formatString: 0
+		lineageTag: 333f33b4-be7b-451e-9248-9d1733f38dca
+
+	column chave
+		dataType: string
+		lineageTag: e361ae76-5684-4474-aa52-0df08a5eae31
+		summarizeBy: none
+		sourceColumn: chave
+
+		annotation SummarizationSetBy = Automatic
+
+	column chave_tanque
+		dataType: string
+		lineageTag: 64607133-3879-48ae-a0fe-c1a5d49d5a4e
+		summarizeBy: none
+		sourceColumn: chave_tanque
+
+		annotation SummarizationSetBy = Automatic
+
+	column data
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: e346c196-a7f6-4396-b4db-970826fa19bb
+		summarizeBy: none
+		sourceColumn: data
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_empresa
+		dataType: int64
+		lineageTag: c6ce53bf-9ad6-4f03-82c2-3a4886fd8601
+		summarizeBy: none
+		sourceColumn: cod_empresa
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_tanque
+		dataType: string
+		lineageTag: 5d06a784-7426-4689-9199-298b3487602a
+		summarizeBy: none
+		sourceColumn: cod_tanque
+
+		annotation SummarizationSetBy = Automatic
+
+	column volume_inicio
+		dataType: double
+		lineageTag: ca720f2c-adc7-4c1b-8ac4-01a10d47dfda
+		summarizeBy: sum
+		sourceColumn: volume_inicio
+
+		annotation SummarizationSetBy = Automatic
+
+	column volume_recebido
+		dataType: double
+		lineageTag: a8910a4e-c484-45ce-aa00-0d3366145af1
+		summarizeBy: sum
+		sourceColumn: volume_recebido
+
+		annotation SummarizationSetBy = Automatic
+
+	column consumo_medido
+		dataType: double
+		lineageTag: 1e9fd4f7-ff81-44b6-af72-5de8f9b5e8f4
+		summarizeBy: sum
+		sourceColumn: consumo_medido
+
+		annotation SummarizationSetBy = Automatic
+
+	column litros_vendidos
+		dataType: double
+		lineageTag: 2fa3767e-a740-4f95-94d0-cb5a7da88907
+		summarizeBy: sum
+		sourceColumn: litros_vendidos
+
+		annotation SummarizationSetBy = Automatic
+
+	column volume_fim
+		dataType: double
+		lineageTag: a46a8500-b6c8-4ada-ad6e-be1700976b01
+		summarizeBy: sum
+		sourceColumn: volume_fim
+
+		annotation SummarizationSetBy = Automatic
+
+	column n_retratos
+		dataType: int64
+		lineageTag: d6432d8c-d54f-4317-929f-e8ea992927ea
+		summarizeBy: sum
+		sourceColumn: n_retratos
+
+		annotation SummarizationSetBy = Automatic
+
+	column teve_sonda_ausente
+		dataType: boolean
+		lineageTag: 6f2bd341-c3e0-4107-932b-d9e7a27f5c28
+		summarizeBy: none
+		sourceColumn: teve_sonda_ausente
+
+		annotation SummarizationSetBy = Automatic
+
+	column saida_encerrante
+		dataType: double
+		lineageTag: 3d3be5b9-6c23-438f-9be5-67f1ec3a42c9
+		summarizeBy: sum
+		sourceColumn: saida_encerrante
+
+		annotation SummarizationSetBy = Automatic
+
+	column afericao_litros
+		dataType: double
+		lineageTag: 161832a4-9dfe-4da0-ba6f-443b498dcf25
+		summarizeBy: sum
+		sourceColumn: afericao_litros
+
+		annotation SummarizationSetBy = Automatic
+
+	column diferenca_litros
+		dataType: double
+		lineageTag: 9a8c95c8-d312-49ee-959c-f609d7402031
+		summarizeBy: sum
+		sourceColumn: diferenca_litros
+
+		annotation SummarizationSetBy = Automatic
+
+	column diferenca_pct
+		dataType: double
+		lineageTag: d97132f2-9599-4bbc-a150-3dcf825b4ff1
+		summarizeBy: average
+		sourceColumn: diferenca_pct
+
+		annotation SummarizationSetBy = Automatic
+
+	column status
+		dataType: string
+		lineageTag: 7679fbe8-13b8-4f0e-bbb2-79fd65bb4c0f
+		summarizeBy: none
+		sourceColumn: status
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fct_conciliacao_tanque_diario = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("localhost:5433", "warehouse"),
+				    Tabela = Fonte{[Schema="gold",Item="fct_conciliacao_tanque_diario"]}[Data]
+				in
+				    Tabela

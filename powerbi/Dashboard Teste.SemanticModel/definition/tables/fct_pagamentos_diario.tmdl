@@ -1,0 +1,72 @@
+table fct_pagamentos_diario
+	lineageTag: f1d3b4fa-3a2c-4ec8-9335-028069a39248
+
+	measure Recebido = SUM(fct_pagamentos_diario[valor])
+		formatString: #,0.00
+		lineageTag: 010ab558-e08f-4252-8427-502cc8c2deb4
+
+	column chave
+		dataType: string
+		lineageTag: 0e4cc2a4-d7e5-4498-b780-efcb2c76ae83
+		summarizeBy: none
+		sourceColumn: chave
+
+		annotation SummarizationSetBy = Automatic
+
+	column data
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 05c13e95-1e23-4190-a185-f61069baae38
+		summarizeBy: none
+		sourceColumn: data
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_empresa
+		dataType: int64
+		lineageTag: 1e3eda43-5262-4a09-9c27-ec2dbe68d28d
+		summarizeBy: none
+		sourceColumn: cod_empresa
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_forma_pagto
+		dataType: int64
+		lineageTag: ca7c8dfe-ba66-4897-93a1-eb6eeafbfb1e
+		summarizeBy: none
+		sourceColumn: cod_forma_pagto
+
+		annotation SummarizationSetBy = Automatic
+
+	column forma_pagamento
+		dataType: string
+		lineageTag: dc18fa0f-0bbc-405c-9bec-a521dba1f1b9
+		summarizeBy: none
+		sourceColumn: forma_pagamento
+
+		annotation SummarizationSetBy = Automatic
+
+	column n_pagamentos
+		dataType: int64
+		lineageTag: f462d18a-5a7f-40d0-b69a-bc84f05e7cb1
+		summarizeBy: sum
+		sourceColumn: n_pagamentos
+
+		annotation SummarizationSetBy = Automatic
+
+	column valor
+		dataType: double
+		lineageTag: 912f212d-1d03-4073-9262-d9f98a7f9383
+		summarizeBy: sum
+		sourceColumn: valor
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fct_pagamentos_diario = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("localhost:5433", "warehouse"),
+				    Tabela = Fonte{[Schema="gold",Item="fct_pagamentos_diario"]}[Data]
+				in
+				    Tabela

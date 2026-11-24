@@ -1,19 +1,11 @@
--- Litros que saíram pelos bicos, por tanque e dia.
--- Liga item vendido -> bico -> tanque pelo redesoftTankId.
--- PREMISSA A CONFIRMAR com dados reais: ItemVendido.bico corresponde a Bico.codigo.
+-- Litros vendidos por tanque e dia (dia do turno do encerrante).
 select
-    concat_ws('|', coalesce(i.data_hora_abastecimento, i.data_hora_venda)::date, i.cod_empresa, t.cod_tanque) as chave,
-    coalesce(i.data_hora_abastecimento, i.data_hora_venda)::date as data,
-    i.cod_empresa,
-    t.cod_tanque,
-    count(*)            as n_abastecimentos,
-    sum(i.quantidade)   as litros_vendidos,
-    sum(i.valor_total)  as valor_total
-from {{ ref('stg_itens_vendidos') }} i
-join {{ ref('stg_bicos') }} b
-  on b.cod_empresa = i.cod_empresa and b.cod_bico = i.bico
-join {{ ref('stg_tanques') }} t
-  on t.cod_empresa = b.cod_empresa and t.redesoft_tank_id = b.redesoft_tank_id
-where not i.cancelado
-  and i.bico is not null
+    concat_ws('|', data, cod_empresa, split_part(chave_tanque, '-', 2)) as chave,
+    data,
+    cod_empresa,
+    split_part(chave_tanque, '-', 2)  as cod_tanque,
+    sum(n_abastecimentos)             as n_abastecimentos,
+    sum(litros_vendidos)              as litros_vendidos,
+    null::numeric                     as valor_total
+from {{ ref('fct_afericao_bico_turno') }}
 group by 2, 3, 4

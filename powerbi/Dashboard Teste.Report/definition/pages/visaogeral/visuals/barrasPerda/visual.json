@@ -1,0 +1,76 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "barrasPerda",
+  "position": {
+    "x": 790,
+    "y": 420,
+    "z": 0,
+    "width": 470,
+    "height": 280
+  },
+  "visual": {
+    "visualType": "clusteredBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_conciliacao_tanque_diario"
+                    }
+                  },
+                  "Property": "chave_tanque"
+                }
+              },
+              "queryRef": "fct_conciliacao_tanque_diario.chave_tanque",
+              "nativeQueryRef": "chave_tanque"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_conciliacao_tanque_diario"
+                    }
+                  },
+                  "Property": "Diferença (L)"
+                }
+              },
+              "queryRef": "fct_conciliacao_tanque_diario.Diferença (L)",
+              "nativeQueryRef": "Diferença (L)"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Perda (+) / sobra (-) acumulada por tanque, litros'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
