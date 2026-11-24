@@ -1,0 +1,18 @@
+version: 2
+sources:
+  - name: raw
+    description: JSON bruto da Cadastros API, carregado pelo Airflow (append-only).
+    schema: raw
+    tables:
+      - name: empresas
+      - name: tanques
+      - name: bicos
+      - name: produtos
+      - name: tipos_combustivel
+      - name: formas_pagamento
+      - name: itens_vendidos
+      - name: vendas
+      - name: pagamentos_vendas
+      - name: caixas
+      - name: medicoes
+      - name: medicoes_consumo

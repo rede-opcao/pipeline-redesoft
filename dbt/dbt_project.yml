@@ -1,0 +1,20 @@
+name: redesoft
+version: "1.0.0"
+profile: redesoft
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+
+vars:
+  # Diferença aceitável entre consumo medido no tanque e litros vendidos nos bicos (% do vendido).
+  # Ajuste conforme a política interna (referência comum de mercado: 0,6%).
+  tolerancia_pct: 0.6
+
+models:
+  redesoft:
+    staging:
+      +schema: staging
+      +materialized: view
+    gold:
+      +schema: gold
+      +materialized: table

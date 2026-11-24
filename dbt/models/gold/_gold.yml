@@ -1,0 +1,31 @@
+version: 2
+models:
+  - name: dim_empresa
+    columns:
+      - name: cod_empresa
+        tests: [unique, not_null]
+  - name: dim_tanque
+    columns:
+      - name: chave_tanque
+        tests: [unique, not_null]
+  - name: fct_vendas_diario
+    columns:
+      - name: chave
+        tests: [unique, not_null]
+  - name: fct_vendas_tanque_diario
+    columns:
+      - name: chave
+        tests: [unique, not_null]
+  - name: fct_pagamentos_diario
+    columns:
+      - name: chave
+        tests: [unique, not_null]
+  - name: fct_conciliacao_tanque_diario
+    description: Consumo medido no tanque x litros vendidos nos bicos, por dia.
+    columns:
+      - name: chave
+        tests: [unique, not_null]
+      - name: status
+        tests:
+          - accepted_values:
+              values: [ok, fora_tolerancia, sem_medicao, sem_venda, sonda_ausente]

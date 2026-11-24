@@ -1,0 +1,20 @@
+select
+    (payload->>'codEmpresa')::int                  as cod_empresa,
+    (payload->>'codVenda')::int                    as cod_venda,
+    (payload->>'codVendaItens')::int               as cod_venda_itens,
+    (payload->>'codPafBanco')::int                 as cod_paf_banco,
+    (payload->>'codProduto')::int                  as cod_produto,
+    (payload->>'quantidade')::numeric              as quantidade,
+    (payload->>'preco')::numeric                   as preco_unitario,
+    (payload->>'totalItem')::numeric               as valor_total,
+    (payload->>'dataHoraVenda')::timestamp         as data_hora_venda,
+    (payload->>'dataHoraAbastecimento')::timestamp as data_hora_abastecimento,
+    (payload->>'cancelado')::boolean               as cancelado,
+    payload->>'unidade'                            as unidade,
+    payload->>'especie'                            as especie,
+    (payload->>'codAbastecimento')::int            as cod_abastecimento,
+    (payload->>'bico')::int                        as bico,
+    (payload->>'codCaixaAberturaTurno')::int       as cod_caixa_abertura_turno,
+    (payload->>'pcusto')::numeric                  as preco_custo
+from ({{ deduplicado('itens_vendidos',
+      "payload->>'codVendaItens', payload->>'codVenda', payload->>'codEmpresa', payload->>'codPafBanco'") }}) s
