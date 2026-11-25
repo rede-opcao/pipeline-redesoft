@@ -73,3 +73,4 @@ table dim_empresa
 				    Tabela = Fonte{[Schema="gold",Item="dim_empresa"]}[Data]
 				in
 				    Tabela
+

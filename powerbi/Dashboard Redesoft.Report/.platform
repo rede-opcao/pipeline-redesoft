@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Dashboard Redesoft"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "8967dae0-b8b3-42bf-a258-4e308dd0a2f6"
+  }
+}

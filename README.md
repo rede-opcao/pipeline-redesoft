@@ -24,6 +24,26 @@ consumo no **Power BI**.
 A **Cadastros API** (DAG `redesoft_diario`, sem agendamento) fica como alternativa para quando a
 chave dela chegar.
 
+## Destino: PostgreSQL ou Google BigQuery
+
+O mesmo pipeline grava em qualquer um dos dois, escolhido no `.env`:
+
+| Variável | PostgreSQL local (padrão) | Google BigQuery |
+|---|---|---|
+| `DESTINO` | `postgres` | `bigquery` |
+| `DBT_TARGET` | `dev` | `bigquery` |
+| `BRONZE_URI` | pasta local | `gs://<bucket>/bronze` |
+| outras | `WAREHOUSE_*` | `BQ_PROJETO`, `BQ_LOCAL`, `GOOGLE_APPLICATION_CREDENTIALS` (só no PC) |
+
+- No BigQuery, cada fonte vira uma tabela em `raw_b2click` com uma coluna de texto por campo do
+  CSV, particionada por `data_ref` (`plugins/redesoft/destino_bigquery.py`).
+- Os modelos dbt são os mesmos nos dois bancos: as macros de `dbt/macros/b2click.sql` escolhem o
+  dialeto pelo target.
+- **Sem Airflow (Cloud Run):** `cloudrun/Dockerfile` + `cloudrun/executar.py` rodam as extrações
+  e o `dbt build` numa tarefa só. Passo a passo em `docs/tutorial-google.html`.
+- Teste sem conta Google, com emulador do BigQuery e as amostras de `data/b2click_teste`:
+  `scripts/testar_bigquery_emulador.py` (validado em 25/11/2026: totais iguais ao PostgreSQL).
+
 ```
 Cadastros API ─► Airflow (02:00) ─► bronze (JSON .jsonl.gz, local ou S3)
                        │

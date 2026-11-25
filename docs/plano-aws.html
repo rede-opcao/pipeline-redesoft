@@ -1,0 +1,334 @@
+<title>Pipeline Redesoft na AWS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: documento de uma coluna (~70ch), tabelas de custo largas com rolagem própria */
+:root {
+  --bg: #f6f8f8; --surface: #ffffff; --fg: #18242a; --muted: #56676f; --line: #d5dfe2;
+  --accent: #0f5a6b; --accent-soft: #e3eff1; --amber: #a2620c; --amber-soft: #fbf0de;
+  --good: #1f7a46; --good-soft: #e2f3e8;
+  --f-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1619; --surface: #162126; --fg: #e3ebee; --muted: #9aaeb5; --line: #2a3a41;
+  --accent: #6cc3d5; --accent-soft: #173238; --amber: #e8b061; --amber-soft: #3a2a12;
+  --good: #6fd39a; --good-soft: #15301f; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f1619; --surface: #162126; --fg: #e3ebee; --muted: #9aaeb5; --line: #2a3a41;
+  --accent: #6cc3d5; --accent-soft: #173238; --amber: #e8b061; --amber-soft: #3a2a12;
+  --good: #6fd39a; --good-soft: #15301f; color-scheme: dark }
+
+body { background: var(--bg); color: var(--fg); font: 17px/1.6 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+main { max-width: 860px; margin: 0 auto; padding-block: 48px 80px; display: grid; gap: 44px; }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.2; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); letter-spacing: -0.01em; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.1rem; }
+p { margin: 0; max-width: 68ch; }
+section { display: grid; gap: 16px; }
+.eyebrow { font: 600 0.78rem/1 var(--f-body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.lead { font-size: 1.12rem; color: var(--muted); }
+.meta { font-size: 0.9rem; color: var(--muted); }
+code, .mono { font-family: var(--f-mono); font-size: 0.86em; }
+code { background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; }
+a { color: var(--accent); }
+ul, ol { margin: 0; padding-left: 1.3em; display: grid; gap: 6px; max-width: 68ch; }
+
+/* resumo */
+.verdict { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 22px; display: grid; gap: 14px; }
+.verdict-row { display: flex; flex-wrap: wrap; gap: 28px; }
+.fig { display: grid; gap: 2px; min-width: 0; }
+.fig b { font: 700 1.9rem/1.1 var(--f-display); font-variant-numeric: tabular-nums; }
+.fig span { font-size: 0.9rem; color: var(--muted); }
+
+/* arquitetura */
+.arch { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; align-items: stretch; }
+.node { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 4px; align-content: start; min-width: 0; }
+.node .k { font: 600 0.72rem/1 var(--f-body); letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+.node strong { font-family: var(--f-display); font-size: 1.02rem; }
+.node small { color: var(--muted); font-size: 0.86rem; line-height: 1.4; }
+.node.aws { border-color: var(--accent); }
+.flow { font-size: 0.92rem; color: var(--muted); }
+
+/* cenários */
+.scen { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.card.rec { border: 2px solid var(--accent); }
+.pill { justify-self: start; font: 600 0.74rem/1 var(--f-body); letter-spacing: 0.05em; text-transform: uppercase; padding: 5px 8px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); }
+.pill.amber { background: var(--amber-soft); color: var(--amber); }
+.price { font: 700 1.7rem/1.1 var(--f-display); font-variant-numeric: tabular-nums; }
+.price small { font: 400 0.95rem var(--f-body); color: var(--muted); }
+.card p { font-size: 0.95rem; }
+
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 0.93rem; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 0.78rem var(--f-body); letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); background: var(--bg); }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.total td { font-weight: 700; border-bottom: 0; }
+td .sub { display: block; color: var(--muted); font-size: 0.85rem; }
+
+.note { border-left: 3px solid var(--amber); background: var(--amber-soft); padding: 12px 14px; border-radius: 0 8px 8px 0; display: grid; gap: 6px; }
+.note.good { border-color: var(--good); background: var(--good-soft); }
+
+/* passos */
+ol.steps { list-style: none; padding: 0; counter-reset: s; gap: 14px; }
+ol.steps > li { counter-increment: s; display: grid; grid-template-columns: 2.2em 1fr; gap: 4px 12px; }
+ol.steps > li::before { content: counter(s); grid-row: span 2; font: 700 1rem/1.9 var(--f-display); color: var(--accent);
+  width: 1.9em; height: 1.9em; text-align: center; border: 1.5px solid var(--accent); border-radius: 50%; }
+ol.steps > li > div { min-width: 0; display: grid; gap: 6px; }
+ol.steps ul { font-size: 0.95rem; }
+pre { margin: 0; overflow-x: auto; background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; font: 0.84rem/1.5 var(--f-mono); }
+
+.decisions { display: grid; gap: 10px; }
+.decision { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+.decision b { font-family: var(--f-display); }
+footer { font-size: 0.86rem; color: var(--muted); display: grid; gap: 6px; }
+</style>
+
+<main>
+  <header style="display:grid;gap:12px">
+    <span class="eyebrow">Pipeline Redesoft · plano de migração</span>
+    <h1>Pipeline Redesoft na AWS</h1>
+    <p class="lead">Quanto custa e como levar o pipeline (B2Click → Airflow → PostgreSQL → Power BI) do computador da TI para a nuvem, na região de São Paulo.</p>
+    <p class="meta">Preços: tabela oficial da AWS para <span class="mono">sa-east-1</span>, consultada em 25/11/2026, sob demanda, 730 h/mês. Conversão a <b>R$ 5,85 por US$</b> (cotação de meados de novembro/2026); a fatura da AWS vem em dólar.</p>
+  </header>
+
+  <section>
+    <h2>Resumo</h2>
+    <div class="verdict">
+      <div class="verdict-row">
+        <div class="fig"><b>≈ US$ 25/mês</b><span>AWS, máquina ligada só na carga (≈ R$ 150)</span></div>
+        <div class="fig"><b>≈ US$ 0–5/mês</b><span>Google BigQuery + Cloud Run (estimativa)</span></div>
+        <div class="fig"><b>≈ US$ 209/mês</b><span>AWS com servidores 24 h e banco gerenciado (≈ R$ 1.220)</span></div>
+      </div>
+      <p>O pipeline trabalha cerca de 30 minutos por dia. <b>Quase todo o custo das opções com servidores 24 h é máquina ociosa</b>: o armazenamento é só 13% do total. Por isso há duas opções mais baratas: ligar a máquina só na janela da carga (sem mudar o código) ou usar serviços cobrados por uso no Google Cloud (com 2 a 3 dias de adaptação). O volume de dados é pequeno para a nuvem (≈ 30 GB por ano).</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Como fica a arquitetura</h2>
+    <div class="arch" aria-label="Fluxo de dados">
+      <div class="node"><span class="k">Origem</span><strong>API B2Click</strong><small>CSV, limite de 10 chamadas/hora por endpoint</small></div>
+      <div class="node aws"><span class="k">AWS · EC2</span><strong>Airflow + dbt</strong><small>Docker Compose, roda às 02:00</small></div>
+      <div class="node aws"><span class="k">AWS · S3</span><strong>Bronze</strong><small>CSV original de cada carga, para reprocessar</small></div>
+      <div class="node aws"><span class="k">AWS · RDS</span><strong>PostgreSQL</strong><small>raw → staging → gold, backup diário</small></div>
+      <div class="node"><span class="k">Consumo</span><strong>Power BI Service</strong><small>atualização agendada após a carga</small></div>
+    </div>
+    <p class="flow">O código é o mesmo que já roda na máquina da TI. Mudam só os endereços: o bronze passa a ser gravado no S3, o banco passa a ser o RDS e o Power BI aponta para o RDS em vez de <code>localhost</code>.</p>
+  </section>
+
+  <section>
+    <h2>Opções de custo</h2>
+    <div class="scen">
+      <div class="card">
+        <span class="pill amber">Mais simples · 24 h</span>
+        <h3>A · Tudo numa máquina</h3>
+        <div class="price">US$ 101 <small>/mês · ≈ R$ 590</small></div>
+        <p>Airflow e PostgreSQL no mesmo servidor EC2, como hoje no PC. Backup feito por snapshot do disco. Se o servidor cair, o banco cai junto.</p>
+        <p>Disco de 100 GB: ~85 GB para dados, cerca de 2,5 anos no ritmo atual. Ampliável sem desligar, a US$ 15,20 por mês para cada 100 GB a mais.</p>
+      </div>
+      <div class="card rec">
+        <span class="pill">Recomendada</span>
+        <h3>B · EC2 + RDS</h3>
+        <div class="price">US$ 209 <small>/mês · ≈ R$ 1.220</small></div>
+        <p>Banco gerenciado pela AWS: backup diário com 7 dias de retenção, atualização de versão e recuperação sem trabalho manual. Com RDS menor (<span class="mono">db.t4g.small</span>), cai para ≈ US$ 159.</p>
+      </div>
+      <div class="card">
+        <span class="pill">Alta disponibilidade</span>
+        <h3>C · RDS Multi-AZ</h3>
+        <div class="price">US$ 331 <small>/mês · ≈ R$ 1.940</small></div>
+        <p>Banco duplicado em dois datacenters de São Paulo, com troca automática em caso de falha. Só vale se os dashboards forem críticos durante o dia todo.</p>
+      </div>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Item</th><th>Configuração</th><th class="n">A</th><th class="n">B</th><th class="n">C</th></tr></thead>
+        <tbody>
+          <tr><td>Servidor do Airflow</td><td>EC2 <span class="mono">t4g.large</span> (2 vCPU, 8 GB, ARM) · US$ 0,1072/h</td><td class="n">78,26</td><td class="n">78,26</td><td class="n">78,26</td></tr>
+          <tr><td>Disco do servidor</td><td>EBS gp3 · US$ 0,152/GB-mês<span class="sub">A: 100 GB (banco junto) · B e C: 30 GB</span></td><td class="n">15,20</td><td class="n">4,56</td><td class="n">4,56</td></tr>
+          <tr><td>Backup do disco</td><td>Snapshots EBS, ~50 GB · US$ 0,068/GB-mês</td><td class="n">3,40</td><td class="n">—</td><td class="n">—</td></tr>
+          <tr><td>Banco PostgreSQL</td><td>RDS <span class="mono">db.t4g.medium</span> (2 vCPU, 4 GB)<span class="sub">Single-AZ US$ 0,137/h · Multi-AZ US$ 0,275/h</span></td><td class="n">—</td><td class="n">100,01</td><td class="n">200,75</td></tr>
+          <tr><td>Disco do banco</td><td>RDS gp3, 100 GB · US$ 0,219/GB-mês (Multi-AZ cobra em dobro)<span class="sub">backup automático incluso até o tamanho do disco</span></td><td class="n">—</td><td class="n">21,90</td><td class="n">43,80</td></tr>
+          <tr><td>Bronze (arquivos originais)</td><td>S3 Standard, ~10 GB · US$ 0,0405/GB-mês</td><td class="n">0,41</td><td class="n">0,41</td><td class="n">0,41</td></tr>
+          <tr><td>Endereço IP público</td><td>1 IPv4 · US$ 0,005/h</td><td class="n">3,65</td><td class="n">3,65</td><td class="n">3,65</td></tr>
+          <tr><td>Saída de dados para o Power BI</td><td>US$ 0,15/GB, mas os primeiros 100 GB/mês são gratuitos; as tabelas gold somam poucos GB</td><td class="n">0,00</td><td class="n">0,00</td><td class="n">0,00</td></tr>
+          <tr class="total"><td>Total por mês (US$)</td><td></td><td class="n">100,92</td><td class="n">208,79</td><td class="n">331,43</td></tr>
+          <tr class="total"><td>Total por mês (R$ 5,85)</td><td></td><td class="n">590</td><td class="n">1.221</td><td class="n">1.939</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <b>Possível custo extra: gateway do Power BI ≈ US$ 43/mês</b>
+      <p>Se o banco ficar fechado à internet (o recomendado), o Power BI Service precisa de um <i>gateway de dados</i> numa máquina Windows sempre ligada. Pode ser uma máquina da empresa que já fica ligada (custo zero) ou uma EC2 Windows <span class="mono">t3.small</span> (US$ 0,052/h + 30 GB de disco ≈ US$ 43/mês). Relatos de atualização direta do Power BI no RDS, sem gateway, falham com frequência por certificado SSL.</p>
+    </div>
+
+    <div class="note good">
+      <b>Como reduzir</b>
+      <ul>
+        <li><b>Compromisso de 1 ano</b> (Savings Plan na EC2, instância reservada no RDS): em geral 25–35% de desconto, sem pagamento adiantado. Faça só depois de 1–2 meses estável.</li>
+        <li><b>Ligar a EC2 só na hora da carga:</b> o pipeline leva ~30 min por dia. Ligando e desligando pelo EventBridge Scheduler (2 h/dia), o servidor cai de US$ 78 para ≈ US$ 6,50 e o cenário B fica perto de US$ 137. A interface do Airflow fica indisponível no resto do dia.</li>
+        <li><b>Região da Virgínia (us-east-1)</b> é ~35% mais barata, mas os dados da rede saem do Brasil. Recomendamos ficar em São Paulo.</li>
+        <li><b>Banco menor:</b> manter no PostgreSQL só os últimos 90 dias da camada raw (o histórico completo fica no S3) segura o disco do RDS em 50 GB.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>Duas opções mais baratas</h2>
+    <p>Nas opções acima, o servidor e o banco ficam ligados 24 horas para um trabalho de 30 minutos. Estas duas evitam pagar pela ociosidade.</p>
+    <div class="scen">
+      <div class="card rec">
+        <span class="pill">Sem reescrever o código</span>
+        <h3>D · AWS ligada só na carga</h3>
+        <div class="price">US$ 25 <small>/mês · ≈ R$ 150</small></div>
+        <p>Uma EC2 com Airflow e PostgreSQL juntos, ligada das 02:00 às 06:00 pelo EventBridge Scheduler e desligada no resto do dia. A carga roda e o Power BI atualiza dentro dessa janela.</p>
+      </div>
+      <div class="card">
+        <span class="pill amber">Menor custo · exige adaptação</span>
+        <h3>E · Google BigQuery + Cloud Run</h3>
+        <div class="price">US$ 0–5 <small>/mês · estimativa</small></div>
+        <p>Sem servidor ligado: a extração roda como tarefa agendada e os dados ficam no BigQuery, cobrado por uso. O Power BI conecta no BigQuery de forma nativa, <b>sem gateway</b>.</p>
+      </div>
+    </div>
+
+    <h3>D · AWS ligada só na carga (São Paulo, preços oficiais)</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Item</th><th>Configuração</th><th class="n">US$/mês</th></tr></thead>
+        <tbody>
+          <tr><td>Servidor</td><td>EC2 <span class="mono">t4g.large</span>, 4 h/dia (≈ 122 h/mês) · US$ 0,1072/h</td><td class="n">13,04</td></tr>
+          <tr><td>Disco</td><td>EBS gp3, 60 GB (cobrado mesmo desligado) · US$ 0,152/GB-mês</td><td class="n">9,12</td></tr>
+          <tr><td>Backup do disco</td><td>Snapshots, ~30 GB · US$ 0,068/GB-mês</td><td class="n">2,04</td></tr>
+          <tr><td>Bronze</td><td>S3 Standard, ~10 GB</td><td class="n">0,41</td></tr>
+          <tr><td>IP público</td><td>Só enquanto ligada · US$ 0,005/h</td><td class="n">0,61</td></tr>
+          <tr><td>Liga/desliga</td><td>EventBridge Scheduler (dentro da cota gratuita)</td><td class="n">0,00</td></tr>
+          <tr class="total"><td>Total</td><td>≈ R$ 148 a R$ 5,85</td><td class="n">25,22</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><b>A favor:</b> o projeto vai como está (Docker Compose, Airflow, dbt, PostgreSQL). É o caminho mais rápido.</li>
+      <li><b>Contra:</b> o banco e a interface do Airflow só ficam acessíveis na janela das 02:00 às 06:00. Se a carga atrasar (por exemplo, esperando o limite de chamadas da API), a janela precisa ser maior. O gateway do Power BI continua necessário.</li>
+      <li>Para consultar o banco fora da janela, basta ligar a máquina manualmente pelo console (alguns minutos e alguns centavos).</li>
+    </ul>
+
+    <h3>E · Google BigQuery + Cloud Run (São Paulo, estimativa)</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Item</th><th>Uso esperado</th><th class="n">US$/mês</th></tr></thead>
+        <tbody>
+          <tr><td>Extração diária</td><td>Cloud Run Jobs, ~15 min/dia com 1 vCPU e 2 GB ≈ 27 mil vCPU-segundos/mês. A cota gratuita mensal de jobs é de 200 a 240 mil vCPU-segundos</td><td class="n">0,00</td></tr>
+          <tr><td>Agendamento</td><td>Cloud Scheduler, 1 tarefa (3 tarefas gratuitas por conta)</td><td class="n">0,00</td></tr>
+          <tr><td>Armazenamento</td><td>BigQuery: 10 GB gratuitos por mês; ~30 GB após um ano</td><td class="n">0–1</td></tr>
+          <tr><td>Consultas</td><td>Transformações diárias + atualização do Power BI, bem abaixo de 1 TB/mês gratuito (em São Paulo, acima disso: US$ 11,25 por TB)</td><td class="n">0,00</td></tr>
+          <tr><td>Imagem e segredos</td><td>Artifact Registry e Secret Manager, dentro das cotas gratuitas</td><td class="n">0–1</td></tr>
+          <tr class="total"><td>Total</td><td>Valores a confirmar na calculadora do Google Cloud</td><td class="n">≈ 0–5</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><b>A favor:</b> custo praticamente zero no volume atual, nenhuma máquina para manter, backup e disponibilidade inclusos, e o Power BI atualiza sem gateway.</li>
+      <li><b>Contra:</b> 2 a 3 dias de adaptação. O extrator e a lógica de negócio continuam, mas a gravação passa de PostgreSQL para BigQuery, os modelos dbt mudam de dialeto SQL e o Airflow sai, substituído pelo agendador. O custo cresce se alguém fizer consultas muito pesadas direto no BigQuery.</li>
+      <li><b>Por que não Firebase:</b> o banco do Firebase (Firestore) é de documentos, não roda SQL nem dbt e não tem conector nativo no Power BI. Para análise de dados no Google, o serviço certo é o BigQuery.</li>
+    </ul>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Comparação</th><th>D · AWS liga/desliga</th><th>B · AWS 24 h + RDS</th><th>E · Google BigQuery</th></tr></thead>
+        <tbody>
+          <tr><td>Custo mensal</td><td>≈ US$ 25</td><td>≈ US$ 209</td><td>≈ US$ 0–5</td></tr>
+          <tr><td>Mudança no código</td><td>Nenhuma</td><td>Só configuração</td><td>2–3 dias de adaptação</td></tr>
+          <tr><td>Gateway do Power BI</td><td>Necessário</td><td>Necessário</td><td>Não precisa</td></tr>
+          <tr><td>Banco disponível</td><td>02:00–06:00</td><td>24 h</td><td>24 h</td></tr>
+          <tr><td>Backup</td><td>Snapshot do disco</td><td>Automático (RDS)</td><td>Automático</td></tr>
+          <tr><td>Manutenção de servidor</td><td>Sim (1 máquina)</td><td>Sim (1 máquina)</td><td>Não</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Passo a passo da migração</h2>
+    <p class="meta">Os passos abaixo valem para as opções na AWS (A, B, C e D). Na opção D, o passo 4 (RDS) sai e o banco fica no próprio servidor; o passo 5 ganha o liga/desliga no EventBridge Scheduler.</p>
+    <p>A ordem importa: cada passo depende do anterior. Cálculo de esforço: 2 a 3 dias de trabalho da TI, com o pipeline local rodando em paralelo até a nuvem ser validada.</p>
+    <ol class="steps">
+      <li><h3>Conta e controle de custos</h3><div>
+        <ul>
+          <li>Conta AWS da empresa, com MFA no usuário raiz e um usuário IAM administrador para o dia a dia.</li>
+          <li>Região <b>South America (São Paulo) – sa-east-1</b> em tudo.</li>
+          <li>AWS Budgets: alerta por e-mail em US$ 250/mês (ou o valor escolhido).</li>
+        </ul></div></li>
+      <li><h3>Repositório do código</h3><div>
+        <ul>
+          <li>Criar um repositório privado (GitHub ou similar) e enviar o projeto. Hoje o código só existe no PC da TI.</li>
+          <li>O arquivo <code>.env</code> continua fora do git. Na AWS, o token do B2Click fica no <b>SSM Parameter Store</b> (criptografado, sem custo no nível padrão).</li>
+        </ul></div></li>
+      <li><h3>Bucket S3 do bronze</h3><div>
+        <ul>
+          <li>Bucket privado (bloqueio de acesso público ligado), criptografia padrão.</li>
+          <li>Regra de ciclo de vida: mover para Glacier Instant Retrieval após 90 dias (barateia o histórico).</li>
+        </ul></div></li>
+      <li><h3>Banco RDS PostgreSQL</h3><div>
+        <ul>
+          <li>PostgreSQL 16, <span class="mono">db.t4g.medium</span>, gp3 100 GB, criptografado, backup automático de 7 dias.</li>
+          <li>Acesso público <b>desligado</b>; grupo de segurança aceitando só a EC2 do Airflow e o gateway do Power BI.</li>
+        </ul></div></li>
+      <li><h3>Servidor do Airflow (EC2)</h3><div>
+        <ul>
+          <li>Amazon Linux 2023 ARM64, <span class="mono">t4g.large</span>, disco gp3 30 GB.</li>
+          <li>Papel IAM com permissão de gravar no bucket e de usar o Session Manager (acesso ao terminal sem abrir a porta SSH).</li>
+          <li>Instalar Docker, o plugin Compose e o git; clonar o repositório.</li>
+        </ul></div></li>
+      <li><h3>Ajustes do projeto para produção</h3><div>
+        <ul>
+          <li><code>BRONZE_URI=s3://&lt;bucket&gt;/bronze</code>, <code>WAREHOUSE_DSN</code> apontando para o RDS com <code>sslmode=require</code>.</li>
+          <li>Um <code>docker-compose.prod.yml</code> sem o serviço <code>warehouse</code> local.</li>
+          <li>Remover <code>SIMPLE_AUTH_MANAGER_ALL_ADMINS</code> e criar usuários com senha para a interface do Airflow, acessada por túnel do Session Manager.</li>
+          <li>Aviso por e-mail quando a DAG falhar (Amazon SES).</li>
+        </ul></div></li>
+      <li><h3>Levar os dados que já existem</h3><div>
+        <ul>
+          <li><code>pg_dump</code> do banco local e <code>pg_restore</code> no RDS (schemas <code>raw_b2click</code> e <code>gold</code>).</li>
+          <li><code>aws s3 sync data/bronze s3://&lt;bucket&gt;/bronze</code> para o histórico de arquivos.</li>
+          <li>Recarregar pela API também funciona, mas respeitando o limite: cerca de 5 chamadas por endpoint para cada mês de histórico.</li>
+        </ul></div></li>
+      <li><h3>Rodar em paralelo e validar</h3><div>
+        <ul>
+          <li>Disparar a DAG <code>b2click_diario</code> na AWS e comparar os totais do gold com o banco local (litros, faturamento, aferições por posto).</li>
+          <li><b>Atenção ao limite da API:</b> local e nuvem rodando no mesmo horário dividem as 10 chamadas/hora. Mude o horário de uma delas durante o teste.</li>
+        </ul></div></li>
+      <li><h3>Power BI</h3><div>
+        <ul>
+          <li>Instalar o gateway de dados na máquina Windows escolhida e cadastrar a fonte PostgreSQL do RDS.</li>
+          <li>Trocar o servidor do relatório de <code>localhost:5433</code> para o endereço do RDS, publicar no Power BI Service e agendar a atualização para 05:00.</li>
+        </ul></div></li>
+      <li><h3>Desligar o ambiente local</h3><div>
+        <ul>
+          <li>Depois de uma semana sem divergências, pausar as DAGs no PC e parar o Docker local.</li>
+          <li>Revisar a primeira fatura e decidir sobre o compromisso de 1 ano.</li>
+        </ul></div></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Decisões para a equipe</h2>
+    <div class="decisions">
+      <div class="decision"><b>Qual opção?</b><span>Para começar barato e já: D (AWS liga/desliga, ≈ US$ 25). Para o menor custo de longo prazo, sem servidor e sem gateway: E (Google BigQuery), aceitando 2–3 dias de adaptação. B vale se o banco precisar ficar disponível o dia todo.</span></div>
+      <div class="decision"><b>Onde fica o gateway do Power BI?</b><span>Uma máquina da empresa sempre ligada (grátis) ou uma EC2 Windows (≈ US$ 43/mês, mais estável).</span></div>
+      <div class="decision"><b>Servidor ligado 24 h ou só na carga?</b><span>Ligado 24 h no início, para facilitar o acompanhamento. Avaliar o liga-desliga depois de estabilizar.</span></div>
+      <div class="decision"><b>Relatórios que chamam a API do B2Click direto</b><span>Migrá-los para ler do banco libera a cota de 10 chamadas/hora para o pipeline e reduz o uso do token.</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Fontes dos preços: AWS Price List (EC2 Linux e Windows, RDS PostgreSQL, S3, transferência de dados e EBS em sa-east-1), consultada em 25/11/2026. Descontos de compromisso e cotação do dólar são estimativas. Para fechar valores, use a AWS Pricing Calculator.</span>
+    <span>Google Cloud (opção E): cotas gratuitas e preço de consulta em São Paulo levantados em guias de terceiros e na página de preços do Cloud Run; não foram conferidos na tabela oficial. Confirme na calculadora do Google Cloud antes de decidir.</span>
+    <span>Volume estimado a partir da carga real de novembro/2026: ~27 mil itens vendidos e ~24 mil pagamentos por dia, 53 empresas, 791 bicos.</span>
+  </footer>
+</main>

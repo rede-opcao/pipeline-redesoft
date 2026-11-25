@@ -97,3 +97,4 @@ table dim_tanque
 				    Tabela = Fonte{[Schema="gold",Item="dim_tanque"]}[Data]
 				in
 				    Tabela
+

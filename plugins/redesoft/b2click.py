@@ -184,6 +184,9 @@ def gravar_bronze(corpo: bytes, fonte: FonteB2C, data_ref: date | None, run_id: 
     dt = (data_ref or datetime.now(timezone.utc).date()).isoformat()
     chave = f"b2click/{fonte.nome}/dt={dt}/{seguro}.csv.gz"
     dados = gzip.compress(corpo)
+    if bronze_uri.startswith("gs://"):
+        from .destino_bigquery import gravar_gcs
+        return gravar_gcs(bronze_uri, chave, dados)
     if bronze_uri.startswith("s3://"):
         import boto3
         bucket, _, prefixo = bronze_uri[5:].partition("/")
@@ -231,7 +234,14 @@ def executar_fonte_b2c(nome: str, run_id: str, inicio: date | None, fim: date | 
     fonte = FONTES_B2C_POR_NOME[nome]
     client = client or B2ClickClient.from_env()
     bronze_uri = bronze_uri or os.environ.get("BRONZE_URI", "data/bronze")
-    dsn = dsn if dsn is not None else os.environ.get("WAREHOUSE_DSN")
+    destino = os.environ.get("DESTINO", "postgres").lower()
+    bq = None
+    if destino == "bigquery":
+        from .destino_bigquery import DestinoBigQuery
+        bq = DestinoBigQuery()
+    else:
+        dsn = dsn if dsn is not None else os.environ.get("WAREHOUSE_DSN")
+    particao = {"cad": None, "dia": "DAY", "mes": "MONTH"}[fonte.tipo]
     total, partes = 0, []
     for a, b, params in chamadas(fonte, inicio, fim):
         corpo = client.get_csv(fonte.endpoint, params)
@@ -239,7 +249,9 @@ def executar_fonte_b2c(nome: str, run_id: str, inicio: date | None, fim: date | 
         gravar_bronze(corpo, fonte, a, run_id, bronze_uri)
         fatias = separar_por_dia(regs, fonte.campo_data, a, b) if fonte.tipo == "dia" else {a: regs}
         for data_ref, parte in fatias.items():
-            if dsn:
+            if bq is not None:
+                bq.substituir_fatia(fonte.nome, particao, data_ref, parte, run_id)
+            elif dsn:
                 substituir_fatia(dsn, fonte, data_ref, parte, run_id)
             partes.append({"data_ref": str(data_ref) if data_ref else None, "registros": len(parte)})
         log.info("%s %s..%s: %s registros (1 requisição)", nome, a or "cadastro", b or "", len(regs))

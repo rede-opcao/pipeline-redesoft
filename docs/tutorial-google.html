@@ -1,0 +1,395 @@
+<title>Redesoft no Google Cloud</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: tutorial de uma coluna (~72ch), índice no topo, blocos de comando com botão de copiar */
+:root {
+  --bg: #f6f8f8; --surface: #ffffff; --fg: #18242a; --muted: #56676f; --line: #d5dfe2;
+  --accent: #0f5a6b; --accent-soft: #e3eff1; --amber: #a2620c; --amber-soft: #fbf0de;
+  --good: #1f7a46; --good-soft: #e2f3e8; --code-bg: #eef3f4;
+  --f-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1619; --surface: #162126; --fg: #e3ebee; --muted: #9aaeb5; --line: #2a3a41;
+  --accent: #6cc3d5; --accent-soft: #173238; --amber: #e8b061; --amber-soft: #3a2a12;
+  --good: #6fd39a; --good-soft: #15301f; --code-bg: #111b1f; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f1619; --surface: #162126; --fg: #e3ebee; --muted: #9aaeb5; --line: #2a3a41;
+  --accent: #6cc3d5; --accent-soft: #173238; --amber: #e8b061; --amber-soft: #3a2a12;
+  --good: #6fd39a; --good-soft: #15301f; --code-bg: #111b1f; color-scheme: dark }
+
+body { background: var(--bg); color: var(--fg); font: 17px/1.6 var(--f-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+main { max-width: 860px; margin: 0 auto; padding-block: 48px 80px; display: grid; gap: 48px; }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.2; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); letter-spacing: -0.01em; }
+h2 { font-size: 1.55rem; }
+h3 { font-size: 1.08rem; }
+p { margin: 0; max-width: 70ch; }
+section { display: grid; gap: 18px; scroll-margin-top: 16px; }
+.eyebrow { font: 600 0.78rem/1 var(--f-body); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.lead { font-size: 1.12rem; color: var(--muted); }
+.meta { font-size: 0.92rem; color: var(--muted); }
+code { font-family: var(--f-mono); font-size: 0.86em; background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+ul { margin: 0; padding-left: 1.3em; display: grid; gap: 6px; max-width: 70ch; }
+
+nav.toc { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 8px; }
+nav.toc ol { margin: 0; padding-left: 1.3em; display: grid; gap: 4px; }
+
+.paths { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+.path { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.path.rec { border: 2px solid var(--accent); }
+.flow { font: 0.84rem/1.5 var(--f-mono); color: var(--muted); }
+.pill { justify-self: start; font: 600 0.72rem/1 var(--f-body); letter-spacing: 0.05em; text-transform: uppercase; padding: 5px 8px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); }
+.pill.amber { background: var(--amber-soft); color: var(--amber); }
+.pill.good { background: var(--good-soft); color: var(--good); }
+
+ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: s; display: grid; gap: 22px; }
+ol.steps > li { counter-increment: s; display: grid; grid-template-columns: 2.2em minmax(0, 1fr); gap: 4px 12px; }
+ol.steps > li::before { content: counter(s); grid-row: span 2; font: 700 1rem/1.9 var(--f-display); color: var(--accent);
+  width: 1.9em; height: 1.9em; text-align: center; border: 1.5px solid var(--accent); border-radius: 50%; }
+ol.steps > li > div { display: grid; gap: 10px; min-width: 0; }
+
+.cmd { position: relative; min-width: 0; }
+.cmd pre { margin: 0; overflow-x: auto; background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px;
+  padding: 12px 14px; padding-right: 76px; font: 0.84rem/1.55 var(--f-mono); white-space: pre; }
+.cmd .lang { position: absolute; left: 12px; top: -9px; font: 600 0.68rem/1 var(--f-body); letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--bg); color: var(--muted); padding: 1px 6px; border-radius: 4px; }
+.cmd button { position: absolute; top: 8px; right: 8px; font: 600 0.78rem var(--f-body); color: var(--accent); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 6px; padding: 4px 9px; cursor: pointer; }
+.cmd button:hover { border-color: var(--accent); }
+
+.note { border-left: 3px solid var(--amber); background: var(--amber-soft); padding: 12px 14px; border-radius: 0 8px 8px 0; display: grid; gap: 6px; }
+.note.good { border-color: var(--good); background: var(--good-soft); }
+.note.info { border-color: var(--accent); background: var(--accent-soft); }
+
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 600px; font-size: 0.92rem; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 600 0.76rem var(--f-body); letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td code { white-space: nowrap; }
+footer { font-size: 0.86rem; color: var(--muted); display: grid; gap: 6px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<main>
+  <header style="display:grid;gap:12px">
+    <span class="eyebrow">Pipeline Redesoft · tutorial</span>
+    <h1>Redesoft no Google Cloud</h1>
+    <p class="lead">Passo a passo para levar os dados do B2Click para o BigQuery e publicar dashboards no Looker Studio com acesso restrito, em dois ambientes: Airflow no PC da TI (ambiente 1) e agendador do Google sem servidor (ambiente 3).</p>
+    <p class="meta">Comandos para o PowerShell do Windows. Região: São Paulo (<code>southamerica-east1</code>). Onde aparece <code>redesoft-dados</code>, use o ID do projeto que vocês criarem.</p>
+  </header>
+
+  <nav class="toc" aria-label="Índice">
+    <strong>Índice</strong>
+    <ol>
+      <li><a href="#visao">Os dois ambientes</a></li>
+      <li><a href="#codigo">Adaptação do código (pré-requisito)</a></li>
+      <li><a href="#base">Parte 0 · Preparar o Google Cloud (comum aos dois)</a></li>
+      <li><a href="#amb1">Parte 1 · Ambiente 1: Airflow no PC gravando no BigQuery</a></li>
+      <li><a href="#amb3">Parte 2 · Ambiente 3: Cloud Run + Scheduler, sem servidor</a></li>
+      <li><a href="#looker">Parte 3 · Looker Studio e controle de acesso</a></li>
+      <li><a href="#backup">Parte 4 · Backup dos programas</a></li>
+      <li><a href="#problemas">Problemas comuns</a></li>
+    </ol>
+  </nav>
+
+  <section id="visao">
+    <h2>Os dois ambientes</h2>
+    <div class="paths">
+      <div class="path">
+        <span class="pill amber">Ambiente 1</span>
+        <h3>Airflow no PC, dados no BigQuery</h3>
+        <div class="flow">PC da TI (Docker + Airflow) → API B2Click → BigQuery → Looker Studio</div>
+        <p>Igual a hoje, mudando só o destino dos dados. Custo de nuvem perto de zero, mas o PC precisa estar ligado às 02:00. Bom para começar e testar.</p>
+      </div>
+      <div class="path rec">
+        <span class="pill">Ambiente 3 · recomendado</span>
+        <h3>Cloud Run + Scheduler</h3>
+        <div class="flow">Agendador do Google (02:00) → tarefa no Cloud Run → API B2Click → BigQuery → Looker Studio</div>
+        <p>Nenhum computador da empresa precisa ficar ligado. A tarefa liga, busca, grava, organiza e desliga. Custo perto de zero no volume atual.</p>
+      </div>
+    </div>
+    <div class="note info">
+      <b>Ordem sugerida</b>
+      <p>Parte 0 → Parte 1 (testar com o Airflow que já conhecem) → Parte 2 (levar para o Google) → Parte 3 (dashboards). Os dois ambientes usam o mesmo projeto, os mesmos dados e as mesmas tabelas: a Parte 2 só troca quem dispara a carga.</p>
+    </div>
+  </section>
+
+  <section id="codigo">
+    <h2>Adaptação do código (pré-requisito)</h2>
+    <div class="note good">
+      <b>Status: pronta (25/11/2026)</b>
+      <p>O pipeline agora grava no PostgreSQL ou no BigQuery, escolhido pela variável <code>DESTINO</code>. A lógica que já funcionava (limite de chamadas da API, divisão por dias, regras de encerrante × aferição × venda) foi reaproveitada. Testado num emulador local do BigQuery com dados reais de 01/11/2026: os totais bateram com o PostgreSQL (34 postos, 232.172 litros, R$ 1.353.730). Ainda não foi rodado numa conta real do Google Cloud.</p>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>O que muda</th><th>Como fica</th></tr></thead>
+        <tbody>
+          <tr><td>Gravação dos dados brutos</td><td>Opção <code>DESTINO=bigquery</code> (<code>plugins/redesoft/destino_bigquery.py</code>). Cada CSV do B2Click vira uma tabela do dataset <code>raw_b2click</code>, uma coluna de texto por campo, particionada por <code>data_ref</code>. Recarregar um dia ou um mês substitui só aquela parte; campos novos da API entram sozinhos.</td></tr>
+          <tr><td>Arquivos originais (bronze)</td><td><code>BRONZE_URI=gs://&lt;bucket&gt;/bronze</code>: os CSVs vão para o Cloud Storage em vez da pasta <code>data/bronze</code>.</td></tr>
+          <tr><td>Transformações (dbt)</td><td>Os mesmos modelos rodam nos dois bancos: as conversões escolhem o dialeto sozinhas (<code>dbt/macros/b2click.sql</code>). Perfil <code>bigquery</code> em <code>dbt/profiles.yml</code>, escolhido por <code>DBT_TARGET=bigquery</code>.</td></tr>
+          <tr><td>Tarefa do Cloud Run (só ambiente 3)</td><td>Pasta <code>cloudrun/</code>: <code>Dockerfile</code> e <code>executar.py</code>, que roda as 12 extrações e depois o <code>dbt build</code>. Variáveis opcionais: <code>DATA_INICIO</code>/<code>DATA_FIM</code> (histórico), <code>FONTES</code> (só algumas), <code>PULAR_DBT=1</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="base">
+    <h2>Parte 0 · Preparar o Google Cloud</h2>
+    <p class="meta">Feito uma vez, vale para os dois ambientes. Tempo: ~1 hora.</p>
+    <ol class="steps">
+      <li><h3>Criar o projeto e ligar a cobrança</h3><div>
+        <ul>
+          <li>Acesse <a href="https://console.cloud.google.com" target="_blank" rel="noopener">console.cloud.google.com</a> com a conta Google da empresa.</li>
+          <li>Crie um projeto (ex.: <code>redesoft-dados</code>) e vincule uma conta de faturamento com cartão. Mesmo dentro das cotas gratuitas, o BigQuery e o Cloud Run exigem faturamento ativo.</li>
+          <li><b>Faturamento → Orçamentos e alertas:</b> crie um orçamento de R$ 50/mês com alerta por e-mail em 50%, 90% e 100%. Assim qualquer surpresa aparece cedo.</li>
+        </ul></div></li>
+
+      <li><h3>Instalar a linha de comando do Google (gcloud)</h3><div>
+        <p>Baixe o instalador para Windows em <a href="https://cloud.google.com/sdk/docs/install" target="_blank" rel="noopener">cloud.google.com/sdk/docs/install</a>. Depois, num PowerShell novo:</p>
+        <div class="cmd"><span class="lang">PowerShell</span><pre>gcloud init</pre><button type="button">Copiar</button></div>
+        <p>Ele abre o navegador para o login e pergunta qual projeto usar. Escolha o projeto criado no passo 1.</p></div></li>
+
+      <li><h3>Definir os nomes usados nos comandos</h3><div>
+        <p>Rode no começo de cada sessão do PowerShell. Troque os valores se usarem outros nomes; o nome de bucket precisa ser único no mundo.</p>
+        <div class="cmd"><span class="lang">PowerShell</span><pre>$PROJETO = "redesoft-dados"
+$REGIAO  = "southamerica-east1"
+$BUCKET  = "redesoft-dados-bronze"
+$SA      = "pipeline-redesoft@$PROJETO.iam.gserviceaccount.com"</pre><button type="button">Copiar</button></div></div></li>
+
+      <li><h3>Ativar os serviços</h3><div>
+        <div class="cmd"><span class="lang">PowerShell</span><pre>gcloud services enable bigquery.googleapis.com storage.googleapis.com run.googleapis.com cloudscheduler.googleapis.com artifactregistry.googleapis.com secretmanager.googleapis.com</pre><button type="button">Copiar</button></div>
+        <p class="meta">Os quatro últimos só são usados no ambiente 3, mas ativar agora não custa nada.</p></div></li>
+
+      <li><h3>Criar os conjuntos de dados no BigQuery</h3><div>
+        <p>Os mesmos três níveis de hoje: dados brutos, limpos e prontos para os dashboards.</p>
+        <div class="cmd"><span class="lang">PowerShell</span><pre>bq --location=$REGIAO mk --dataset "${PROJETO}:raw_b2click"
+bq --location=$REGIAO mk --dataset "${PROJETO}:staging"
+bq --location=$REGIAO mk --dataset "${PROJETO}:gold"</pre><button type="button">Copiar</button></div></div></li>
+
+      <li><h3>Criar o bucket dos arquivos originais</h3><div>
+        <div class="cmd"><span class="lang">PowerShell</span><pre>gcloud storage buckets create "gs://$BUCKET" --location=$REGIAO --uniform-bucket-level-access</pre><button type="button">Copiar</button></div>
+        <p class="meta">O bucket nasce privado. Não ative acesso público.</p></div></li>
+
+      <li><h3>Criar a conta de serviço do pipeline</h3><div>
+        <p>É o "usuário" que o pipeline usa para gravar. Ela recebe só as permissões necessárias.</p>
+        <div class="cmd"><span class="lang">PowerShell</span><pre>gcloud iam service-accounts create pipeline-redesoft --display-name="Pipeline Redesoft"
+gcloud projects add-iam-policy-binding $PROJETO --member="serviceAccount:$SA" --role="roles/bigquery.dataEditor"
+gcloud projects add-iam-policy-binding $PROJETO --member="serviceAccount:$SA" --role="roles/bigquery.jobUser"
+gcloud storage buckets add-iam-policy-binding "gs://$BUCKET" --member="serviceAccount:$SA" --role="roles/storage.objectAdmin"</pre><button type="button">Copiar</button></div></div></li>
+
+      <li><h3>Limitar o gasto com consultas (recomendado)</h3><div>
+        <p>No console: <b>IAM e administrador → Cotas</b>, filtre por <i>BigQuery API · Query usage per day</i> e defina um teto, por exemplo 200 GB por dia. Uma consulta pesada feita por engano não passa disso.</p></div></li>
+    </ol>
+  </section>
+
+  <section id="amb1">
+    <h2>Parte 1 · Ambiente 1: Airflow no PC gravando no BigQuery</h2>
+    <p class="meta">Requer a Parte 0. Tempo: ~1 hora.</p>
+    <ol class="steps">
+      <li><h3>Gerar a chave da conta de serviço</h3><div>
+        <p>O Airflow no PC precisa de um arquivo de chave para se identificar no Google. Ele fica numa pasta <code>secrets</code>, fora do git.</p>
+        <div class="cmd"><span class="lang">PowerShell</span><pre>cd "$env:USERPROFILE\Desktop\pipeline redesoft"
+New-Item -ItemType Directory -Force secrets | Out-Null
+gcloud iam service-accounts keys create secrets\gcp-pipeline.json --iam-account=$SA</pre><button type="button">Copiar</button></div>
+        <div class="note"><b>Cuidado com esse arquivo</b><p>Quem tiver a chave grava no BigQuery em nome do pipeline. Não envie por e-mail nem coloque no git (a pasta <code>secrets/</code> vai para o <code>.gitignore</code>). Se a organização bloquear a criação de chaves, o erro cita <i>iam.disableServiceAccountKeyCreation</i>: nesse caso, pule direto para o ambiente 3, que não usa chave.</p></div></div></li>
+
+      <li><h3>Ajustar o <code>.env</code></h3><div>
+        <p>Acrescente (ou troque) estas linhas. As credenciais do B2Click continuam as mesmas.</p>
+        <div class="cmd"><span class="lang">.env</span><pre>DESTINO=bigquery
+DBT_TARGET=bigquery
+BQ_PROJETO=redesoft-dados
+BQ_LOCAL=southamerica-east1
+BRONZE_URI=gs://redesoft-dados-bronze/bronze
+GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/secrets/gcp-pipeline.json</pre><button type="button">Copiar</button></div></div></li>
+
+      <li><h3>Subir o Airflow com a nova versão</h3><div>
+        <p>O <code>docker-compose.yml</code> já monta a pasta <code>secrets</code> (somente leitura), e a imagem já traz o <code>dbt-bigquery</code> e as bibliotecas do Google.</p>
+        <div class="cmd"><span class="lang">PowerShell</span><pre>docker compose up -d --build</pre><button type="button">Copiar</button></div></div></li>
+
+      <li><h3>Testar com poucos dias</h3><div>
+        <p>Em <a href="http://localhost:8080" target="_blank" rel="noopener">localhost:8080</a>, abra a DAG <code>b2click_diario</code> → <b>Trigger DAG w/ config</b>:</p>
+        <div class="cmd"><span class="lang">config</span><pre>{"data_inicio": "2026-11-20", "data_fim": "2026-11-23"}</pre><button type="button">Copiar</button></div>
+        <p>Depois confira no BigQuery (console → BigQuery → editor de consultas):</p>
+        <div class="cmd"><span class="lang">SQL</span><pre>select data, count(distinct cod_empresa) as postos, round(sum(quantidade)) as litros
+from `redesoft-dados.gold.fct_vendas_diario`
+where especie = 'COMBUSTIVEL'
+group by data order by data;</pre><button type="button">Copiar</button></div>
+        <p>Os números devem bater com o PostgreSQL local para os mesmos dias.</p></div></li>
+
+      <li><h3>Garantir o PC ligado às 02:00</h3><div>
+        <ul>
+          <li>Windows → Configurações → Energia: suspensão em <b>Nunca</b> quando ligado na tomada.</li>
+          <li>Docker Desktop → Settings → General: marque <b>Start Docker Desktop when you sign in</b>.</li>
+          <li>Depois de queda de energia ou atualização do Windows, alguém precisa entrar no usuário para o Docker abrir. Esse é o principal motivo para migrar ao ambiente 3.</li>
+        </ul></div></li>
+    </ol>
+  </section>
+
+  <section id="amb3">
+    <h2>Parte 2 · Ambiente 3: Cloud Run + Scheduler, sem servidor</h2>
+    <p class="meta">Requer a Parte 0 e o Docker Desktop no PC, só para montar a imagem. Tempo: ~2 horas.</p>
+    <ol class="steps">
+      <li><h3>Guardar o token do B2Click no cofre de segredos</h3><div>
+        <ul>
+          <li>Console → <b>Segurança → Secret Manager → Criar secret</b>.</li>
+          <li>Nome: <code>b2click-token</code>. Valor: o token. Local: <i>regional</i>, São Paulo.</li>
+          <li>Faça pelo console, não pela linha de comando, para o token não ficar no histórico do PowerShell.</li>
+        </ul>
+        <p>Depois dê à conta de serviço permissão de ler o segredo:</p>
+        <div class="cmd"><span class="lang">PowerShell</span><pre>gcloud secrets add-iam-policy-binding b2click-token --member="serviceAccount:$SA" --role="roles/secretmanager.secretAccessor"</pre><button type="button">Copiar</button></div></div></li>
+
+      <li><h3>Criar o repositório de imagens</h3><div>
+        <div class="cmd"><span class="lang">PowerShell</span><pre>gcloud artifacts repositories create pipeline --repository-format=docker --location=$REGIAO
+gcloud auth configure-docker "$REGIAO-docker.pkg.dev"</pre><button type="button">Copiar</button></div></div></li>
+
+      <li><h3>Montar e enviar a imagem da tarefa</h3><div>
+        <p>Com o Docker Desktop aberto, na pasta do projeto:</p>
+        <div class="cmd"><span class="lang">PowerShell</span><pre>$IMAGEM = "$REGIAO-docker.pkg.dev/$PROJETO/pipeline/redesoft:v1"
+docker build -f cloudrun/Dockerfile -t $IMAGEM .
+docker push $IMAGEM</pre><button type="button">Copiar</button></div>
+        <p class="meta">A cada mudança no código, repita com uma versão nova (<code>v2</code>, <code>v3</code>...) e atualize a tarefa no passo 4 com <code>gcloud run jobs update</code>.</p></div></li>
+
+      <li><h3>Criar a tarefa no Cloud Run</h3><div>
+        <p>1 vCPU, 2 GB de memória e até 3 horas por execução, para dar tempo de esperar a cota da API do B2Click virar a hora. Troque <code>ENTIDADE</code> e <code>USUARIO</code> pelos valores do <code>.env</code>.</p>
+        <div class="cmd"><span class="lang">PowerShell</span><pre>gcloud run jobs create redesoft-diario `
+  --image=$IMAGEM --region=$REGIAO --service-account=$SA `
+  --cpu=1 --memory=2Gi --task-timeout=3h --max-retries=1 `
+  --set-env-vars="DESTINO=bigquery,BQ_PROJETO=$PROJETO,BQ_LOCAL=$REGIAO,BRONZE_URI=gs://$BUCKET/bronze,B2CLICK_ENTIDADE=ENTIDADE,B2CLICK_USUARIO=USUARIO" `
+  --set-secrets="B2CLICK_TOKEN=b2click-token:latest"</pre><button type="button">Copiar</button></div></div></li>
+
+      <li><h3>Rodar uma vez para testar</h3><div>
+        <div class="cmd"><span class="lang">PowerShell</span><pre>gcloud run jobs execute redesoft-diario --region=$REGIAO --wait</pre><button type="button">Copiar</button></div>
+        <p>Sem datas, ela carrega os últimos 3 dias. Os logs ficam em Console → <b>Cloud Run → Jobs → redesoft-diario → Execuções</b>. Confira os números com a consulta da Parte 1.</p>
+        <div class="note"><b>Não rode junto com o Airflow local</b><p>A API do B2Click aceita 10 chamadas por hora por endpoint. Se o ambiente 1 ainda estiver ativo, pause a DAG <code>b2click_diario</code> no PC antes deste teste.</p></div></div></li>
+
+      <li><h3>Agendar para todo dia às 02:00</h3><div>
+        <p>Mais fácil pelo console: <b>Cloud Run → Jobs → redesoft-diario → Gatilhos → Adicionar gatilho do Scheduler</b>, frequência <code>0 2 * * *</code>, fuso <i>America/Sao_Paulo</i>. Ou pela linha de comando:</p>
+        <div class="cmd"><span class="lang">PowerShell</span><pre>gcloud run jobs add-iam-policy-binding redesoft-diario --region=$REGIAO --member="serviceAccount:$SA" --role="roles/run.invoker"
+gcloud scheduler jobs create http redesoft-02h `
+  --location=$REGIAO --schedule="0 2 * * *" --time-zone="America/Sao_Paulo" `
+  --uri="https://run.googleapis.com/v2/projects/$PROJETO/locations/$REGIAO/jobs/redesoft-diario:run" `
+  --http-method=POST --oauth-service-account-email=$SA</pre><button type="button">Copiar</button></div></div></li>
+
+      <li><h3>Receber e-mail quando falhar</h3><div>
+        <ul>
+          <li>Console → <b>Monitoring → Alertas → Criar política</b>.</li>
+          <li>Métrica: <i>Cloud Run Job → Completed executions</i>, filtrando <code>result = failed</code> e o job <code>redesoft-diario</code>. Condição: qualquer valor acima de 0.</li>
+          <li>Canal de notificação: e-mail da TI.</li>
+        </ul></div></li>
+
+      <li><h3>Carregar o histórico</h3><div>
+        <p>Para meses anteriores, rode a tarefa com as datas. Cada mês consome cerca de 5 chamadas por endpoint da cota de 10 por hora; a tarefa espera sozinha quando a cota acaba.</p>
+        <div class="cmd"><span class="lang">PowerShell</span><pre>gcloud run jobs execute redesoft-diario --region=$REGIAO --update-env-vars="DATA_INICIO=2026-01-01,DATA_FIM=2026-10-31" --wait</pre><button type="button">Copiar</button></div></div></li>
+
+      <li><h3>Desligar o ambiente 1</h3><div>
+        <p>Depois de uma semana com o agendamento funcionando, pause as DAGs no Airflow local. O Docker do PC pode continuar como ambiente de testes.</p></div></li>
+    </ol>
+  </section>
+
+  <section id="looker">
+    <h2>Parte 3 · Looker Studio e controle de acesso</h2>
+    <p class="meta">Funciona igual para os dois ambientes, porque os dois gravam no mesmo BigQuery.</p>
+    <ol class="steps">
+      <li><h3>Conectar o BigQuery</h3><div>
+        <ul>
+          <li>Acesse <a href="https://lookerstudio.google.com" target="_blank" rel="noopener">lookerstudio.google.com</a> → <b>Criar → Relatório</b>.</li>
+          <li><b>Adicionar dados → BigQuery → Meus projetos</b> → <code>redesoft-dados</code> → <code>gold</code> → escolha a tabela (comece por <code>fct_vendas_diario</code>).</li>
+          <li>Repita para <code>fct_conciliacao_tanque_diario</code>, <code>fct_afericao_bico_turno</code>, <code>fct_pagamentos_diario</code> e <code>dim_empresa</code>.</li>
+        </ul></div></li>
+
+      <li><h3>Configurar cada fonte de dados</h3><div>
+        <ul>
+          <li><b>Credenciais: do proprietário.</b> Quem vê o dashboard não precisa de acesso ao BigQuery.</li>
+          <li><b>Atualização dos dados: a cada 4 horas.</b> A carga roda de madrugada; atualizar mais vezes só gasta consultas.</li>
+          <li>Use sempre as tabelas do <code>gold</code>, que são resumidas. Evite ligar dashboards nas tabelas do <code>raw_b2click</code>.</li>
+        </ul></div></li>
+
+      <li><h3>Compartilhar só com quem pode ver</h3><div>
+        <ul>
+          <li>No relatório: <b>Compartilhar → Convidar pessoas</b>, com os e-mails (ou um Grupo do Google, como "diretoria").</li>
+          <li>Em <b>Gerenciar acesso</b>, deixe o link como <b>Restrito</b> (nunca "Qualquer pessoa com o link").</li>
+          <li>Desmarque a opção de visualizadores baixarem, imprimirem e copiarem, se não quiserem que os dados saiam do dashboard.</li>
+          <li>Cada pessoa entra com conta Google. Quem usa e-mail de outro provedor pode criar uma conta Google com o próprio e-mail da empresa, sem criar Gmail.</li>
+        </ul></div></li>
+
+      <li><h3>Cada gerente vê só o próprio posto</h3><div>
+        <p>Crie uma tabela de permissões (quem vê qual posto) e uma visão que junte os dados com ela:</p>
+        <div class="cmd"><span class="lang">SQL</span><pre>create table `redesoft-dados.gold.permissoes` (email string, cod_empresa int64);
+
+insert into `redesoft-dados.gold.permissoes` values
+  ('gerente.bessa@empresa.com.br', 22),
+  ('diretoria@empresa.com.br', 1), ('diretoria@empresa.com.br', 3);  -- uma linha por posto
+
+create or replace view `redesoft-dados.gold.vw_vendas_por_usuario` as
+select v.*, p.email
+from `redesoft-dados.gold.fct_vendas_diario` v
+join `redesoft-dados.gold.permissoes` p using (cod_empresa);</pre><button type="button">Copiar</button></div>
+        <p>No Looker Studio, use a visão como fonte de dados e, em <b>Editar fonte de dados</b>, ative <b>Filtrar por e-mail</b> escolhendo o campo <code>email</code>. Cada pessoa passa a ver só as linhas com o e-mail dela. Os e-mails acima são exemplos.</p></div></li>
+
+      <li><h3>Portal com a cara da empresa (opcional)</h3><div>
+        <p>Crie um site no <b>Google Sites</b> (gratuito), insira os relatórios por <b>Inserir → Looker Studio</b> e restrinja o site às mesmas pessoas. O controle de acesso continua sendo o do Looker Studio: o dashboard embutido só abre para quem está logado numa conta autorizada.</p></div></li>
+    </ol>
+  </section>
+
+  <section id="backup">
+    <h2>Parte 4 · Backup dos programas</h2>
+    <p>Um bucket separado, com versionamento: se um arquivo for apagado ou corrompido, a versão anterior continua lá. Para arquivos leves, o custo é de centavos por mês.</p>
+    <div class="cmd"><span class="lang">PowerShell</span><pre>$BACKUP = "redesoft-dados-backup-programas"
+gcloud storage buckets create "gs://$BACKUP" --location=$REGIAO --uniform-bucket-level-access --default-storage-class=NEARLINE
+gcloud storage buckets update "gs://$BACKUP" --versioning
+gcloud storage rsync "D:\Programas" "gs://$BACKUP/programas" --recursive</pre><button type="button">Copiar</button></div>
+    <ul>
+      <li>Troque <code>D:\Programas</code> pela pasta real. Agende a última linha no <b>Agendador de Tarefas do Windows</b> (diário ou semanal).</li>
+      <li>Nearline é mais barato para arquivos que raramente são lidos. Há cobrança mínima de 30 dias por arquivo, irrelevante para backup.</li>
+      <li>Para não acumular versões para sempre: no console, <b>Cloud Storage → bucket → Ciclo de vida</b>, regra para apagar versões antigas com mais de 90 dias.</li>
+    </ul>
+  </section>
+
+  <section id="problemas">
+    <h2>Problemas comuns</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Sintoma</th><th>Causa provável</th><th>O que fazer</th></tr></thead>
+        <tbody>
+          <tr><td>Log mostra "limite de requisições/hora atingido; aguardando"</td><td>Cota de 10 chamadas/hora da API do B2Click, dividida com outros usos</td><td>Nada: a tarefa espera a hora virar. Se acontecer todo dia, verifique se outro sistema (relatórios antigos, ambiente 1) chama a API no mesmo horário.</td></tr>
+          <tr><td><i>Access Denied</i> ao gravar no BigQuery</td><td>Conta de serviço sem papel</td><td>Refaça o passo 7 da Parte 0 e confira se o projeto em <code>BQ_PROJETO</code> é o mesmo.</td></tr>
+          <tr><td>Tarefa termina por tempo (timeout)</td><td>Carga histórica longa esperando a cota</td><td>Divida o período em blocos de 1 a 2 meses ou aumente <code>--task-timeout</code>.</td></tr>
+          <tr><td>API do B2Click recusa a conexão vinda do Google</td><td>A Redesoft pode liberar só IPs conhecidos</td><td>Confirme com a Redesoft. Se exigir IP fixo, o Cloud Run precisa de Cloud NAT com IP reservado (≈ US$ 30–35/mês).</td></tr>
+          <tr><td>Dashboard mostra dados de ontem à tarde</td><td>Cache do Looker Studio</td><td>Botão <b>Atualizar dados</b> no relatório, ou reduza o intervalo de atualização da fonte.</td></tr>
+          <tr><td>Datas com um dia de diferença</td><td>Fuso horário</td><td>Agendamentos sempre em <i>America/Sao_Paulo</i>. As datas do B2Click já vêm no horário de Brasília.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <span>Base: o pipeline do projeto "pipeline redesoft" (extrator B2Click, regras de conciliação e modelos gold), já preparado para o BigQuery e testado num emulador local. Os comandos do Google Cloud CLI foram conferidos contra a sintaxe atual, mas ainda não executados numa conta real: rode primeiro com poucos dias de dados.</span>
+    <span>Custos esperados no volume atual: perto de zero (cotas gratuitas de Cloud Run, Scheduler e BigQuery), mais centavos de armazenamento. Confira na calculadora do Google Cloud.</span>
+  </footer>
+</main>
+
+<script>
+document.querySelectorAll('.cmd').forEach(function (bloco) {
+  var botao = bloco.querySelector('button');
+  var pre = bloco.querySelector('pre');
+  botao.addEventListener('click', function () {
+    var texto = pre.innerText;
+    var pronto = function () { botao.textContent = 'Copiado'; setTimeout(function () { botao.textContent = 'Copiar'; }, 1500); };
+    var selecionar = function () {
+      var r = document.createRange(); r.selectNodeContents(pre);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      botao.textContent = 'Ctrl+C';
+    };
+    try {
+      navigator.clipboard.writeText(texto).then(pronto, selecionar);
+    } catch (e) { selecionar(); }
+  });
+});
+</script>

@@ -22,6 +22,8 @@ table fct_pagamentos_diario
 
 		annotation SummarizationSetBy = Automatic
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column cod_empresa
 		dataType: int64
 		lineageTag: f03e919b-1361-42c9-befe-22f3fb707768
@@ -70,3 +72,4 @@ table fct_pagamentos_diario
 				    Tabela = Fonte{[Schema="gold",Item="fct_pagamentos_diario"]}[Data]
 				in
 				    Tabela
+

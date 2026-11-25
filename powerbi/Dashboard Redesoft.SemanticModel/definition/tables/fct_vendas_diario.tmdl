@@ -26,6 +26,8 @@ table fct_vendas_diario
 
 		annotation SummarizationSetBy = Automatic
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column cod_empresa
 		dataType: int64
 		lineageTag: 61e1b529-7b25-4b8b-8239-12bbfdd0f2fa
@@ -90,3 +92,4 @@ table fct_vendas_diario
 				    Tabela = Fonte{[Schema="gold",Item="fct_vendas_diario"]}[Data]
 				in
 				    Tabela
+

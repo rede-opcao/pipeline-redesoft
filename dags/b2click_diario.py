@@ -55,8 +55,10 @@ def b2click_diario():
 
     dbt_build = BashOperator(
         task_id="dbt_build",
+        # DBT_TARGET=dev (PostgreSQL local) ou bigquery, conforme o .env
         bash_command=("cd /opt/airflow/dbt && /home/airflow/dbt_venv/bin/dbt build --select tag:b2click "
-                      "--profiles-dir . --target-path /tmp/dbt_target_b2click"),
+                      '--target "${DBT_TARGET:-dev}" --profiles-dir . --target-path /tmp/dbt_target_b2click'),
+        append_env=True,
     )
 
     extracoes >> dbt_build

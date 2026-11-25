@@ -1,35 +1,17 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
   "name": "matrizConciliacao",
   "position": {
-    "x": 20,
-    "y": 420,
+    "x": 20.15748031496063,
+    "y": 419.9475065616798,
     "z": 0,
-    "width": 760,
-    "height": 280
+    "height": 280.52493438320209,
+    "width": 769.3438320209973
   },
   "visual": {
     "visualType": "pivotTable",
     "query": {
       "queryState": {
-        "Rows": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "fct_conciliacao_tanque_diario"
-                    }
-                  },
-                  "Property": "chave_tanque"
-                }
-              },
-              "queryRef": "fct_conciliacao_tanque_diario.chave_tanque",
-              "nativeQueryRef": "chave_tanque"
-            }
-          ]
-        },
         "Columns": {
           "projections": [
             {
@@ -44,7 +26,27 @@
                 }
               },
               "queryRef": "Calendario.Data",
-              "nativeQueryRef": "Data"
+              "nativeQueryRef": "Data",
+              "active": true
+            }
+          ]
+        },
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_conciliacao_tanque_diario"
+                    }
+                  },
+                  "Property": "chave_tanque"
+                }
+              },
+              "queryRef": "fct_conciliacao_tanque_diario.chave_tanque",
+              "nativeQueryRef": "chave_tanque",
+              "active": true
             }
           ]
         },
@@ -90,5 +92,51 @@
         }
       ]
     }
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "ce99cad3224c75c5394b",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fct_conciliacao_tanque_diario"
+              }
+            },
+            "Property": "chave_tanque"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "9ef181bb11238c6d44ef",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Calendario"
+              }
+            },
+            "Property": "Data"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "bf2842b4bf72b63de315",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fct_conciliacao_tanque_diario"
+              }
+            },
+            "Property": "Diferença %"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

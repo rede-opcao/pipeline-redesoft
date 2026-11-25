@@ -26,6 +26,8 @@ table fct_afericao_bico_turno
 
 		annotation SummarizationSetBy = Automatic
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column cod_caixa_abertura_turno
 		dataType: int64
 		lineageTag: 8ead5cef-535b-408a-b617-dbad9a25a55d
@@ -130,6 +132,23 @@ table fct_afericao_bico_turno
 
 		annotation SummarizationSetBy = Automatic
 
+	column chave
+		dataType: string
+		lineageTag: e61474a2-801b-4eeb-b557-6a39ada00b33
+		summarizeBy: none
+		sourceColumn: chave
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_paf_banco
+		dataType: int64
+		formatString: 0
+		lineageTag: 95e0c8a9-2861-4272-86e1-cfb1e6dba3aa
+		summarizeBy: sum
+		sourceColumn: cod_paf_banco
+
+		annotation SummarizationSetBy = Automatic
+
 	partition fct_afericao_bico_turno = m
 		mode: import
 		source =
@@ -138,3 +157,4 @@ table fct_afericao_bico_turno
 				    Tabela = Fonte{[Schema="gold",Item="fct_afericao_bico_turno"]}[Data]
 				in
 				    Tabela
+

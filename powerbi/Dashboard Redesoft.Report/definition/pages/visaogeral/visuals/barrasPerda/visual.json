@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.15.0/schema.json",
   "name": "barrasPerda",
   "position": {
     "x": 790,
     "y": 420,
     "z": 0,
-    "width": 470,
-    "height": 280
+    "height": 280,
+    "width": 470
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -26,7 +26,8 @@
                 }
               },
               "queryRef": "fct_conciliacao_tanque_diario.chave_tanque",
-              "nativeQueryRef": "chave_tanque"
+              "nativeQueryRef": "chave_tanque",
+              "active": true
             }
           ]
         },
@@ -72,5 +73,37 @@
         }
       ]
     }
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "fb9357003f8f2e041585",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fct_conciliacao_tanque_diario"
+              }
+            },
+            "Property": "chave_tanque"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "6faf35a8f460bf39dd9f",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fct_conciliacao_tanque_diario"
+              }
+            },
+            "Property": "Diferença (L)"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

@@ -4,7 +4,7 @@
 --   diferenca_litros > 0: saiu mais pelo bico do que foi vendido; < 0: vendeu mais do que o encerrante marcou.
 -- volume_inicio/volume_fim vêm do estoque físico do LMC. Recebimentos (descargas) ainda não entram.
 with bicos as (
-    select data, cod_empresa, chave_tanque,
+    select data, cod_empresa, cod_produto_tanque,
            sum(saida_encerrante)  as saida_encerrante,
            sum(afericao_litros)   as afericao_litros,
            sum(saida_liquida)     as consumo_medido,
@@ -13,24 +13,24 @@ with bicos as (
     group by 1, 2, 3
 ),
 lmc as (
-    select data, cod_empresa || '-' || cod_produto_tanque as chave_tanque,
+    select data, cod_empresa, cod_produto_tanque,
            sum(estoque_abertura) as volume_inicio, sum(estoque_fechamento) as volume_fim
     from {{ ref('stg_b2c_tanque_lmc') }}
-    group by 1, 2
+    group by 1, 2, 3
 ),
 medicoes as (
-    select data, cod_empresa || '-' || cod_produto_tanque as chave_tanque, count(*) as n_retratos
+    select data, cod_empresa, cod_produto_tanque, count(*) as n_retratos
     from {{ ref('stg_b2c_medicao_tanques') }}
-    group by 1, 2
+    group by 1, 2, 3
 )
 select
-    concat_ws('|', b.data, b.chave_tanque)        as chave,
-    b.chave_tanque,
+    {{ rs_chave(['b.data', 'b.cod_empresa', 'b.cod_produto_tanque']) }}  as chave,
+    {{ rs_chave(['b.cod_empresa', 'b.cod_produto_tanque'], '-') }}       as chave_tanque,
     b.data,
     b.cod_empresa,
-    split_part(b.chave_tanque, '-', 2)            as cod_tanque,
+    cast(b.cod_produto_tanque as {{ dbt.type_string() }})                as cod_tanque,
     l.volume_inicio,
-    null::numeric                                 as volume_recebido,
+    cast(null as numeric)                         as volume_recebido,
     b.consumo_medido,
     b.litros_vendidos,
     l.volume_fim,
@@ -49,5 +49,7 @@ select
         else 'ok'
     end                                           as status
 from bicos b
-left join lmc l on l.data = b.data and l.chave_tanque = b.chave_tanque
-left join medicoes m on m.data = b.data and m.chave_tanque = b.chave_tanque
+left join lmc l
+  on l.data = b.data and l.cod_empresa = b.cod_empresa and l.cod_produto_tanque = b.cod_produto_tanque
+left join medicoes m
+  on m.data = b.data and m.cod_empresa = b.cod_empresa and m.cod_produto_tanque = b.cod_produto_tanque

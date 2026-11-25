@@ -23,6 +23,7 @@ x-airflow-common: &airflow-common
     - ./dbt:/opt/airflow/dbt
     - ./data:/opt/airflow/data
     - ./logs:/opt/airflow/logs
+    - ./secrets:/opt/airflow/secrets:ro   # chave da conta de serviço do Google (DESTINO=bigquery)
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on: &airflow-depends
     airflow-db:

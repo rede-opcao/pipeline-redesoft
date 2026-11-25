@@ -1,0 +1,11 @@
+# Nada disso entra nas imagens (chaves, dados locais, logs)
+.env
+secrets/
+data/
+logs/
+.git/
+powerbi/
+docs/
+**/__pycache__
+dbt/target/
+dbt/logs/

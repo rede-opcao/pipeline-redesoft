@@ -1,3 +1,5 @@
+# Escolha do banco: dbt build --target dev (PostgreSQL local) ou --target bigquery.
+# O Airflow e a tarefa do Cloud Run usam a variável DBT_TARGET.
 redesoft:
   target: dev
   outputs:
@@ -6,7 +8,19 @@ redesoft:
       host: "{{ env_var('WAREHOUSE_HOST', 'localhost') }}"
       port: "{{ env_var('WAREHOUSE_PORT', '5433') | int }}"
       user: warehouse
-      password: "{{ env_var('WAREHOUSE_PASSWORD') }}"
+      password: "{{ env_var('WAREHOUSE_PASSWORD', '') }}"
       dbname: warehouse
       schema: public
       threads: 4
+    bigquery:
+      type: bigquery
+      # Com arquivo de chave (PC): service-account. No Cloud Run: oauth usa a conta de serviço da tarefa.
+      method: "{{ 'service-account' if env_var('GOOGLE_APPLICATION_CREDENTIALS', '') else 'oauth' }}"
+      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS', '') }}"
+      project: "{{ env_var('BQ_PROJETO', 'defina-BQ_PROJETO') }}"
+      dataset: staging
+      location: "{{ env_var('BQ_LOCAL', 'southamerica-east1') }}"
+      threads: 4
+      job_execution_timeout_seconds: 900
+      job_retries: 1
+      priority: interactive

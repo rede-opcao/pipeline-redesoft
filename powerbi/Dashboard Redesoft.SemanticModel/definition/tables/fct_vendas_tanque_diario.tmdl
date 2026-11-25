@@ -18,6 +18,8 @@ table fct_vendas_tanque_diario
 
 		annotation SummarizationSetBy = Automatic
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column cod_empresa
 		dataType: int64
 		lineageTag: 796e7ea6-59a7-4965-921f-54c91dea90f8
@@ -35,12 +37,14 @@ table fct_vendas_tanque_diario
 		annotation SummarizationSetBy = Automatic
 
 	column n_abastecimentos
-		dataType: int64
+		dataType: double
 		lineageTag: 6068abb9-0699-4ca5-868b-45cfc2e29b0b
 		summarizeBy: sum
 		sourceColumn: n_abastecimentos
 
 		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column litros_vendidos
 		dataType: double
@@ -66,3 +70,4 @@ table fct_vendas_tanque_diario
 				    Tabela = Fonte{[Schema="gold",Item="fct_vendas_tanque_diario"]}[Data]
 				in
 				    Tabela
+

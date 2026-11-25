@@ -41,3 +41,9 @@ relationship 5b0e694c-12d1-44f6-af38-b93a46b114d0
 relationship c8f8cea7-4b16-4248-9cdc-5f99a6e62b31
 	fromColumn: fct_conciliacao_tanque_diario.chave_tanque
 	toColumn: dim_tanque.chave_tanque
+
+relationship ee68dcd6-2407-4f79-8578-e3fc0e3988da
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Calendario.Data
+	toColumn: LocalDateTable_94624aea-2e3a-48fc-ace0-ede46c2cca27.Date
+

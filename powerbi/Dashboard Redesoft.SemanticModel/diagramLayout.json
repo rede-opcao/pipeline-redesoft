@@ -1,0 +1,126 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 622.23087536172125,
+            "y": 303.17320909030877
+          },
+          "nodeIndex": "Calendario",
+          "nodeLineageTag": "5a583b73-f3ff-4682-be71-7c593eb71806",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 907.2853428344331,
+            "y": 364.58800916830137
+          },
+          "nodeIndex": "dim_empresa",
+          "nodeLineageTag": "94e37a01-1f9f-4511-9739-0f92e397fc12",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 340.21984861308442
+          },
+          "nodeIndex": "dim_tanque",
+          "nodeLineageTag": "97cd7d86-b8cf-4ce2-90b0-cd02df4d5975",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 903.59988082099528,
+            "y": -50
+          },
+          "nodeIndex": "fct_afericao_bico_turno",
+          "nodeLineageTag": "9ec7f59e-c951-4708-9bf7-735e138b46b0",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 335.18510719281994,
+            "y": 406.13916036851589
+          },
+          "nodeIndex": "fct_conciliacao_tanque_diario",
+          "nodeLineageTag": "8adfb1ff-ac0a-483f-b97e-8af54558837a",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 437.93455031093657,
+            "y": -20.675223056984578
+          },
+          "nodeIndex": "fct_pagamentos_diario",
+          "nodeLineageTag": "08e01519-eafb-407a-88f3-adb76e537e53",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 932.69012232783928,
+            "y": 689.3380372054246
+          },
+          "nodeIndex": "fct_vendas_diario",
+          "nodeLineageTag": "4b6ab79f-6684-48d3-98e1-7fc01d29f417",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1219.7065040350376,
+            "y": 425.47868068907565
+          },
+          "nodeIndex": "fct_vendas_tanque_diario",
+          "nodeLineageTag": "74d6b281-fbab-409d-a29d-1a7de774ff3d",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Todas as tabelas",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Todas as tabelas",
+  "defaultDiagram": "Todas as tabelas"
+}

@@ -1,8 +1,16 @@
 model Model
+	culture: en-US
 	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: pt-BR
 	dataAccessOptions
 		legacyRedirects
 		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["dim_empresa","dim_tanque","fct_conciliacao_tanque_diario","fct_afericao_bico_turno","fct_pagamentos_diario","fct_vendas_diario","fct_vendas_tanque_diario"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["DevMode"]
 
 ref table dim_empresa
 ref table dim_tanque
@@ -12,3 +20,6 @@ ref table fct_pagamentos_diario
 ref table fct_vendas_diario
 ref table fct_vendas_tanque_diario
 ref table Calendario
+ref table DateTableTemplate_63da88fd-d274-42ab-9acf-edee70b5818b
+ref table LocalDateTable_94624aea-2e3a-48fc-ace0-ede46c2cca27
+

@@ -8,6 +8,12 @@ table Calendario
 		summarizeBy: none
 		sourceColumn: [Data]
 
+		variation Variação
+			isDefault
+			relationship: ee68dcd6-2407-4f79-8578-e3fc0e3988da
+			defaultHierarchy: LocalDateTable_94624aea-2e3a-48fc-ace0-ede46c2cca27.'Date Hierarchy'
+
 	partition Calendario = calculated
 		mode: import
 		source = SELECTCOLUMNS(CALENDARAUTO(), "Data", [Date])
+

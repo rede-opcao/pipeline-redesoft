@@ -16,7 +16,7 @@ dias_carregados as (
     select distinct cod_empresa, data_venda as data from {{ ref('stg_b2c_itens_vendidos') }}
 )
 select
-    concat_ws('-', a.cod_empresa, a.cod_paf_banco, a.cod_lmc_bico) as chave,
+    {{ rs_chave(['a.cod_empresa', 'a.cod_paf_banco', 'a.cod_lmc_bico'], '-') }} as chave,
     a.cod_lmc_bico,
     a.cod_paf_banco,
     a.cod_empresa,
@@ -24,7 +24,8 @@ select
     a.cod_caixa_abertura_turno,
     a.ordem,
     a.bico,
-    a.cod_empresa || '-' || a.cod_produto_tanque            as chave_tanque,
+    {{ rs_chave(['a.cod_empresa', 'a.cod_produto_tanque'], '-') }}          as chave_tanque,
+    a.cod_produto_tanque,
     a.cod_produto,
     a.encerrante_inicial,
     a.encerrante_final,
